@@ -39,11 +39,11 @@ import shutil
 
 from .... import utils
 from . import dataset_utils
-from ...timeseries.constants import TASK_CATEGORY_TS_ANOMALYDETECTION
+from ...timeseries.constants import TASK_CATEGORY_TS_ANOMALYDETECTION, TASK_CATEGORY_TS_CLASSIFICATION
 
 
 def get_datasets_list(task_type=None):
-    if task_type == 'timeseries_classification':
+    if task_type == TASK_CATEGORY_TS_CLASSIFICATION:
         return ['arc_fault_example_dsi', 'arc_fault_example_dsk']  # ['oxford_flowers102']
     elif task_type == 'audio_classification':
         return ['SpeechCommands']  # ['oxford_flowers102']

@@ -62,7 +62,7 @@ def init_params(*args, **kwargs):
             dataset_path=None,  # dataset split will be created here
             extract_path=None,
             split_factor=(0.6, 0.3, 0.1),
-            split_names=('train', 'val', 'test'),
+            split_names=constants.SPLIT_NAMES_DEFAULT,
             max_num_files=10000,
             input_data_path=None,  # input images
             input_annotation_path=None,  # annotation file

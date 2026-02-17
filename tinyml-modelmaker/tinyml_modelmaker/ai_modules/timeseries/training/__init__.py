@@ -41,16 +41,16 @@ from .tinyml_tinyverse import timeseries_classification, timeseries_regression, 
 
 ## classification
 _model_descriptions.update(timeseries_classification.get_model_descriptions())
-_training_module_descriptions.update({'timeseries_classification':[constants.TASK_CATEGORY_TS_CLASSIFICATION]})
+_training_module_descriptions.update({constants.TASK_CATEGORY_TS_CLASSIFICATION:[constants.TASK_CATEGORY_TS_CLASSIFICATION]})
 ## regression
 _model_descriptions.update(timeseries_regression.get_model_descriptions())
-_training_module_descriptions.update({'timeseries_regression':[constants.TASK_CATEGORY_TS_REGRESSION]})
+_training_module_descriptions.update({constants.TASK_CATEGORY_TS_REGRESSION:[constants.TASK_CATEGORY_TS_REGRESSION]})
 ## anomalydetection
 _model_descriptions.update(timeseries_anomalydetection.get_model_descriptions())
-_training_module_descriptions.update({'timeseries_anomalydetection':[constants.TASK_CATEGORY_TS_ANOMALYDETECTION]})
+_training_module_descriptions.update({constants.TASK_CATEGORY_TS_ANOMALYDETECTION:[constants.TASK_CATEGORY_TS_ANOMALYDETECTION]})
 ## forecasting
 _model_descriptions.update(timeseries_forecasting.get_model_descriptions())
-_training_module_descriptions.update({'timeseries_forecasting':[constants.TASK_CATEGORY_TS_FORECASTING]})
+_training_module_descriptions.update({constants.TASK_CATEGORY_TS_FORECASTING:[constants.TASK_CATEGORY_TS_FORECASTING]})
 
 def get_training_module_descriptions(target_device=None, training_device=None):
     return _training_module_descriptions

@@ -34,6 +34,18 @@ import os
 PLUGINS_ENABLE_GPL = False
 PLUGINS_ENABLE_EXTRA = False
 
+# target_module
+TARGET_MODULE_VISION = 'vision'
+
+# training_backend
+TRAINING_BACKEND_TINYML_TINYVERSE = 'tinyml_tinyverse'
+
+# dataset split names
+SPLIT_NAME_TRAIN = 'train'
+SPLIT_NAME_VAL = 'val'
+SPLIT_NAME_TEST = 'test'
+SPLIT_NAMES_DEFAULT = (SPLIT_NAME_TRAIN, SPLIT_NAME_VAL, SPLIT_NAME_TEST)
+
 # task_type
 
 TASK_TYPE_IMAGE_CLASSIFICATION = 'image_classification'
@@ -404,7 +416,7 @@ TASK_DESCRIPTIONS = {
   
     TASK_TYPE_IMAGE_CLASSIFICATION: {
         'task_name': 'MNIST Classification',
-        'target_module': 'vision',
+        'target_module': TARGET_MODULE_VISION,
         'target_devices': TARGET_DEVICES,
         'stages': ['dataset', 'data_processing_feature_extraction', 'training', 'compilation'],
     },

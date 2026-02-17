@@ -41,7 +41,7 @@ from .tinyml_tinyverse import image_classification
 
 ## image classification
 _model_descriptions.update(image_classification.get_model_descriptions())
-_training_module_descriptions.update({'image_classification':[constants.TASK_CATEGORY_IMAGE_CLASSIFICATION]})
+_training_module_descriptions.update({constants.TASK_CATEGORY_IMAGE_CLASSIFICATION:[constants.TASK_CATEGORY_IMAGE_CLASSIFICATION]})
 
 def get_training_module_descriptions(target_device=None, training_device=None):
     return _training_module_descriptions

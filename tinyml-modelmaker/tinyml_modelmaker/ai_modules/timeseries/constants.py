@@ -34,6 +34,18 @@ import os
 PLUGINS_ENABLE_GPL = False
 PLUGINS_ENABLE_EXTRA = False
 
+# target_module
+TARGET_MODULE_TIMESERIES = 'timeseries'
+
+# training_backend
+TRAINING_BACKEND_TINYML_TINYVERSE = 'tinyml_tinyverse'
+
+# dataset split names
+SPLIT_NAME_TRAIN = 'train'
+SPLIT_NAME_VAL = 'val'
+SPLIT_NAME_TEST = 'test'
+SPLIT_NAMES_DEFAULT = (SPLIT_NAME_TRAIN, SPLIT_NAME_VAL, SPLIT_NAME_TEST)
+
 # task_type
 TASK_TYPE_MOTOR_FAULT = 'motor_fault'
 TASK_TYPE_ARC_FAULT = 'arc_fault'
@@ -454,7 +466,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
 TASK_DESCRIPTIONS = {
     TASK_TYPE_ARC_FAULT: {
         'task_name': 'ARC Fault',
-        'target_module': 'timeseries',
+        'target_module': TARGET_MODULE_TIMESERIES,
         'target_devices': [
             TARGET_DEVICE_F280013,
             TARGET_DEVICE_F280015,
@@ -471,7 +483,7 @@ TASK_DESCRIPTIONS = {
 
     TASK_TYPE_MOTOR_FAULT: {
         'task_name': 'Motor Fault',
-        'target_module': 'timeseries',
+        'target_module': TARGET_MODULE_TIMESERIES,
         'target_devices': [
             TARGET_DEVICE_F280013,
             TARGET_DEVICE_F280015,
@@ -487,7 +499,7 @@ TASK_DESCRIPTIONS = {
     },
     TASK_TYPE_BLOWER_IMBALANCE: {
         'task_name': 'Fan Blower Imbalance Fault',
-        'target_module': 'timeseries',
+        'target_module': TARGET_MODULE_TIMESERIES,
         'target_devices': [
             TARGET_DEVICE_F280013,
             TARGET_DEVICE_F280015,
@@ -501,7 +513,7 @@ TASK_DESCRIPTIONS = {
     },
     TASK_TYPE_GENERIC_TS_CLASSIFICATION: {
         'task_name': 'Time Series Classification',
-        'target_module': 'timeseries',
+        'target_module': TARGET_MODULE_TIMESERIES,
         'target_devices': [
             TARGET_DEVICE_F280013,
             TARGET_DEVICE_F280015,
@@ -518,25 +530,25 @@ TASK_DESCRIPTIONS = {
     },
     # TASK_TYPE_GENERIC_TS_REGRESSION: {
     #     'task_name': 'Generic Time Series Regression',
-    #     'target_module': 'timeseries',
+    #     'target_module': TARGET_MODULE_TIMESERIES,
     #     'target_devices': TARGET_DEVICES,
     #     'stages': ['dataset', 'data_processing_feature_extraction', 'training', 'compilation'],
     # },
     # TASK_TYPE_GENERIC_TS_ANOMALYDETECTION: {
     #     'task_name': 'Generic Time Series Anomaly Detection',
-    #     'target_module': 'timeseries',
+    #     'target_module': TARGET_MODULE_TIMESERIES,
     #     'target_devices': TARGET_DEVICES,
     #     'stages': ['dataset', 'data_processing_feature_extraction', 'training', 'compilation'],
     # },
     # TASK_TYPE_GENERIC_TS_FORECASTING: {
     #     'task_name': 'Generic Time Series Forecasting',
-    #     'target_module': 'timeseries',
+    #     'target_module': TARGET_MODULE_TIMESERIES,
     #     'target_devices': TARGET_DEVICES,
     #     'stages': ['dataset', 'data_processing_feature_extraction', 'training', 'compilation'],
     # },
     TASK_TYPE_PIR_DETECTION: {
         'task_name': 'PIR Detection',
-        'target_module': 'timeseries',
+        'target_module': TARGET_MODULE_TIMESERIES,
         'target_devices': [
             TARGET_DEVICE_CC2755,],
         'stages': ['dataset', 'data_processing_feature_extraction', 'training', 'compilation'],

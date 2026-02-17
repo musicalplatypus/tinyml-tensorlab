@@ -53,6 +53,7 @@ except ImportError:
 from typing import Any, Dict
 
 from .... import utils
+from ...timeseries.constants import SPLIT_NAME_TRAIN, SPLIT_NAME_TEST
 
 
 def create_filelist(input_data_path: str, output_dir: str, ignore_str_list=None) -> str:
@@ -484,8 +485,8 @@ def dataset_split(dataset, split_factor, split_names, random_seed=1):
         if 'split_name' in image_info and image_info['split_name'] is not None:
             # print(f'file_name={image_info["file_name"]} split_name={image_info["split_name"]}')
             split_name = image_info['split_name']
-            split_name = split_names[0] if 'train' in split_name else split_name #change trainval to tarin
-            split_name = split_names[1] if 'test' in split_name else split_name  #change test to val
+            split_name = split_names[0] if SPLIT_NAME_TRAIN in split_name else split_name #change trainval to train
+            split_name = split_names[1] if SPLIT_NAME_TEST in split_name else split_name  #change test to val
         else:
             # print(f'split_name was not found in {image_info["file_name"]}')
             split_name = split_names[0] if random.random() < split_factor else split_names[1]
