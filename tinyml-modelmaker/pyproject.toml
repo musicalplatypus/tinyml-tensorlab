@@ -55,5 +55,11 @@ include-package-data = true
 include = [ "tinyml_modelmaker*",]
 exclude = [ "tests*",]
 
+[project.optional-dependencies]
+test = ["pytest>=8.0", "pytest-cov>=5.0"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
 [tool.setuptools.dynamic.version]
 attr = "tinyml_modelmaker.__version__"
