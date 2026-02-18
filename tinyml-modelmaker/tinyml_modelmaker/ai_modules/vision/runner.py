@@ -94,7 +94,8 @@ class ModelRunner():
             self.params.training.model_packaged_path = os.path.join(self.params.training.training_path,
                                     '_'.join(os.path.split(self.params.common.run_name))+'.zip')
 
-        assert self.params.common.target_device in constants.TARGET_DEVICES_ALL, f'common.target_device must be set to one of: {constants.TARGET_DEVICES_ALL}'
+        if self.params.common.target_device not in constants.TARGET_DEVICES_ALL:
+            raise ValueError(f'common.target_device must be set to one of: {constants.TARGET_DEVICES_ALL}')
         # target_device_compilation_folder = self.params.common.target_device
 
         if self.params.compilation.compile_output_path:

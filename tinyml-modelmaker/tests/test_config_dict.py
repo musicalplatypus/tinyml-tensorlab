@@ -48,13 +48,13 @@ class TestConfigDictInit:
         assert cfg.z == 30   # added by args
 
     def test_init_invalid_input(self):
-        with pytest.raises(AssertionError):
+        with pytest.raises(TypeError):
             ConfigDict(42)
 
     def test_init_non_yaml_file(self, tmp_path):
         txt_file = tmp_path / 'config.txt'
         txt_file.write_text('key: value')
-        with pytest.raises(AssertionError):
+        with pytest.raises(ValueError):
             ConfigDict(str(txt_file))
 
 

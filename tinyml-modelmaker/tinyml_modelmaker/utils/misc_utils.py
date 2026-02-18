@@ -144,7 +144,8 @@ def simplify_dict(in_dict):
     '''
     simplify dict so that it can be written using yaml(pyyaml) package
     '''
-    assert isinstance(in_dict, (dict, config_dict.ConfigDict)), 'input must of type dict or ConfigDict'
+    if not isinstance(in_dict, (dict, config_dict.ConfigDict)):
+        raise TypeError('input must be of type dict or ConfigDict')
     d = dict()
     for k, v in in_dict.items():
         if isinstance(v, (dict,config_dict.ConfigDict)):
@@ -195,11 +196,11 @@ def sort_annotations(json_file_path, preference_order=None, annotation_prefix="r
         Sorting the segmentation annotations to create correct mask.
     """
     if preference_order is None or json_file_path is None:
-        sys.exit(
+        raise ValueError(
             "Please provide the preference order(increasing order of importance) / Annotation file path for this functionality")
 
     if preference_order == "" or json_file_path == "":
-        sys.exit("Preference order / Annotation file path can't be an empty string")
+        raise ValueError("Preference order / Annotation file path can't be an empty string")
 
     preference_order = preference_order.split(",")
 
@@ -262,7 +263,7 @@ def reformat_to_modelmaker(input_dataset_path=None):
         which is obtained from Label Studio
     """
     if input_dataset_path is None or input_dataset_path == "":
-        sys.exit("Please provide the dataset path for reformatting the folder structure")
+        raise ValueError("Please provide the dataset path for reformatting the folder structure")
 
     # Fetching the destination paths
     destination_folder = os.path.join(input_dataset_path, "annotations")
