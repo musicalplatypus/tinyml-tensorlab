@@ -30,10 +30,13 @@
 
 import argparse
 import json
+import logging
 import os
 import sys
 
 import yaml
+
+logger = logging.getLogger("root.run")
 
 
 def main(config):
@@ -52,7 +55,7 @@ def main(config):
     # model_description = ai_target_module.runner.ModelRunner.get_model_descriptions(params).get(model_name) --> Another way to do the above line
     if config['training']['enable']:
         if model_description is None:
-            print(f"please check if the given model_name is a supported one: {model_name}")
+            logger.error(f"please check if the given model_name is a supported one: {model_name}")
             return False
     #
     dataset_preset_descriptions = ai_target_module.runner.ModelRunner.get_dataset_preset_descriptions(params)
@@ -90,7 +93,7 @@ def main(config):
 
     # prepare
     run_params_file = model_runner.prepare()
-    print(f'Run params is at: {run_params_file}')
+    logger.info(f'Run params is at: {run_params_file}')
     
     # run
     model_runner.run()
@@ -98,7 +101,8 @@ def main(config):
 
 
 if __name__ == '__main__':
-    print(f'argv: {sys.argv}')
+    logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(name)s - %(message)s')
+    logger.debug(f'argv: {sys.argv}')
     # the cwd must be the root of the repository
     if os.path.split(os.getcwd())[-1] == 'tinyml_modelmaker':
         os.chdir('..')

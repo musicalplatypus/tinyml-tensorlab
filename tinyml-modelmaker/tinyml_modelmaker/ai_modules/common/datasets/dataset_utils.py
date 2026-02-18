@@ -33,6 +33,7 @@ import collections
 import copy
 import glob
 import json
+import logging
 import os
 import random
 import re
@@ -54,6 +55,8 @@ from typing import Any, Dict
 
 from .... import utils
 from ...timeseries.constants import SPLIT_NAME_TRAIN, SPLIT_NAME_TEST
+
+logger = logging.getLogger("root.dataset_utils")
 
 
 def create_filelist(input_data_path: str, output_dir: str, ignore_str_list=None) -> str:
@@ -495,7 +498,7 @@ def dataset_split(dataset, split_factor, split_names, random_seed=1):
         dataset_splits[split_name]['annotations'].extend(annotations)
         image_count_split[split_name] += 1
     #
-    print('dataset split sizes', image_count_split)
+    logger.info(f'dataset split sizes {image_count_split}')
     return dataset_splits
 
 

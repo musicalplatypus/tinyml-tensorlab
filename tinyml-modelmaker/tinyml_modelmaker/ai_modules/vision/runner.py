@@ -30,6 +30,7 @@
 
 import copy
 import datetime
+import logging
 import os
 
 # import tarfile
@@ -43,6 +44,7 @@ from . import constants, datasets, descriptions
 from .params import init_params
 from tinyml_torchmodelopt.quantization import TinyMLQuantizationVersion
 
+logger = logging.getLogger("root.vision.runner")
 
 
 class ModelRunner():
@@ -59,7 +61,8 @@ class ModelRunner():
 
         # print the runner params
         if verbose:
-            [print(key, ':', value) for key, value in vars(self.params).items()]
+            for key, value in vars(self.params).items():
+                logger.info(f'{key} : {value}')
         #
         # normalize the paths
         if not self.params.dataset.dataset_name:
@@ -113,14 +116,14 @@ class ModelRunner():
             inference_time_us_list = {k:v['inference_time_us'] for k,v in self.params.training.target_devices.items()}
             sram_usage_list = {k: v['sram'] for k, v in self.params.training.target_devices.items()}
             flash_usage_list = {k: v['flash'] for k, v in self.params.training.target_devices.items()}
-            print('---------------------------------------------------------------------')
-            print(f'Run Name: {self.params.common.run_name}')
-            print(f'- Model: {self.params.training.model_name}')
-            print(f'- TargetDevices & Estimated Inference Times (us): {inference_time_us_list}')
-            print(f'- TargetDevices & Estimated SRAM Usage (bytes): {sram_usage_list}')
-            print(f'- TargetDevices & Estimated Flash Usage (bytes): {flash_usage_list}')
-            print('- This model can be compiled for the above device(s).')
-            print('---------------------------------------------------------------------')
+            logger.info('---------------------------------------------------------------------')
+            logger.info(f'Run Name: {self.params.common.run_name}')
+            logger.info(f'- Model: {self.params.training.model_name}')
+            logger.info(f'- TargetDevices & Estimated Inference Times (us): {inference_time_us_list}')
+            logger.info(f'- TargetDevices & Estimated SRAM Usage (bytes): {sram_usage_list}')
+            logger.info(f'- TargetDevices & Estimated Flash Usage (bytes): {flash_usage_list}')
+            logger.info('- This model can be compiled for the above device(s).')
+            logger.info('---------------------------------------------------------------------')
         #
 
     def resolve_run_name(self, run_name, model_name):
@@ -224,9 +227,9 @@ class ModelRunner():
             self.package_trained_model(model_training_package_files, self.params.training.model_packaged_path)
             if not utils.misc_utils.str2bool(self.params.testing.skip_train):
                 if self.params.training.training_path_quantization:
-                    print(f'\nTrained model is at: {self.params.training.training_path_quantization}\n')
+                    logger.info(f'Trained model is at: {self.params.training.training_path_quantization}')
                 else:
-                    print(f'\nTrained model is at: {self.params.training.training_path}\n')
+                    logger.info(f'Trained model is at: {self.params.training.training_path}')
             # we are done with training
             with open(self.params.training.log_file_path, 'a') as lfp:
                 lfp.write('\nSUCCESS: ModelMaker - Training completed.')
@@ -242,7 +245,7 @@ class ModelRunner():
             self.model_compilation.clear()
             exit_flag = self.model_compilation.run()
             if exit_flag:
-                print(f'Compilation failed')
+                logger.error('Compilation failed')
                 with open(self.params.compilation.log_file_path, 'a') as lfp:
                     lfp.write('FAILURE: ModelMaker - Compilation failed.')
                 return self.params
@@ -267,7 +270,7 @@ class ModelRunner():
 
 
             self.package_trained_model(model_compilation_package_files, self.params.compilation.model_packaged_path)
-            print(f'Compiled model is at: {self.params.compilation.compilation_path}')
+            logger.info(f'Compiled model is at: {self.params.compilation.compilation_path}')
             with open(self.params.compilation.log_file_path, 'a') as lfp:
                 lfp.write('\nSUCCESS: ModelMaker - Compilation completed.')
 
