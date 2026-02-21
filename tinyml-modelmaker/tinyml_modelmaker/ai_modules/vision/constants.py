@@ -131,7 +131,7 @@ TARGET_SDK_RELEASE_F29H85 = '01_00_00'
 TARGET_SDK_VERSION_MSPM0 = "2.08.00.03"
 TARGET_SDK_RELEASE_MSPM0 = '2_08_00_03'
 
-TINYML_TARGET_DEVICE_ADDITIONAL_INFORMATION = '\n * Tiny ML model development information: https://github.com/TexasInstruments/tinyml-tensorlab \n'
+TINYML_TARGET_DEVICE_ADDITIONAL_INFORMATION = '\n * Tiny ML model development information: https://github.com/musicalplatypus/tinyml-tensorlab \n'
 
 ##### AM263 ######
 TARGET_DEVICE_SETUP_INSTRUCTIONS_AM263 = \

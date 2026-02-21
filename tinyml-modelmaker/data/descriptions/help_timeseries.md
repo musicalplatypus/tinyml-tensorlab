@@ -78,7 +78,7 @@ These are the devices that are supported currently. As additional devices are su
 
 ## Additional information
 
- * Tiny ML model development information: https://github.com/TexasInstruments/tinyml-tensorlab 
+ * Tiny ML model development information: https://github.com/musicalplatypus/tinyml-tensorlab 
 
 
 ## Dataset format

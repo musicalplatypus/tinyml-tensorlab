@@ -44,7 +44,7 @@ USE_INTERNAL_REPO=0
 if [[ ${USE_INTERNAL_REPO} -eq 1 ]]; then
     SOURCE_LOCATION="ssh://git@bitbucket.itg.ti.com/tinyml-algo/"
 else
-    SOURCE_LOCATION="https://github.com/TexasInstruments/tinyml-tensorlab/"
+    SOURCE_LOCATION="https://github.com/musicalplatypus/tinyml-tensorlab/"
 fi
 # print
 echo "SOURCE_LOCATION="${SOURCE_LOCATION}

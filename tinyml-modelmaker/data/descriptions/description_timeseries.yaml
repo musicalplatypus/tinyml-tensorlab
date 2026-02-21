@@ -105,7 +105,7 @@ help_descriptions: "\n## Overview\nThis is a tool for collecting data, training 
   * SDK release: 2_08_00_03\n\n### CC2755\n* Product information: https://www.ti.com/product/CC2755R10\n\
   * Launchpad: https://www.ti.com/tool/LP-EM-CC2745R10-Q1\n* CC2755 SDK: http://tgrex10.toro.design.ti.com/tirex4-handoff/explore/node?node=A__AEIJm0rwIeU.2P1OBWwlaA__SIMPLELINK-SDK-EDGEAI-PLUGIN__Nz0hc8j__LATEST&placeholder=true\n\
   * SDK release: 09_12_00_00\n\n\n## Additional information\n\n * Tiny ML model development\
-  \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n\n\n## Dataset\
+  \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n\n\n## Dataset\
   \ format\n- The dataset format is similar to that of the [Google Speech Commands](https://www.tensorflow.org/datasets/catalog/speech_commands)\
   \ dataset, but there are some changes as explained below.\n\n\n####  Dataset format\n\
   The dataset should have the following structure. \n\n<pre>\ndata/projects/<dataset_name>/dataset\n\
@@ -8027,7 +8027,7 @@ target_device_descriptions:
       \nImportant links:\n* Product information: https://www.ti.com/product/AM2634\n\
       * Development board: https://www.ti.com/tool/LP-AM263\n* SDK: https://www.ti.com/tool/MCU-PLUS-SDK-AM263X\n\
       * SDK release: 06_00_01\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: AM263
     device_selection_factor: 7
     device_type: MCU
@@ -8039,7 +8039,7 @@ target_device_descriptions:
       \nImportant links:\n* Product information: https://www.ti.com/product/CC2755R10\n\
       * Launchpad: https://www.ti.com/tool/LP-EM-CC2745R10-Q1\n* CC2755 SDK: http://tgrex10.toro.design.ti.com/tirex4-handoff/explore/node?node=A__AEIJm0rwIeU.2P1OBWwlaA__SIMPLELINK-SDK-EDGEAI-PLUGIN__Nz0hc8j__LATEST&placeholder=true\n\
       * SDK release: 09_12_00_00\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: CC2755
     device_selection_factor: 11
     device_type: MCU
@@ -8052,7 +8052,7 @@ target_device_descriptions:
       \ links:\n* Product information: https://www.ti.com/product/TMS320F2800137\n\
       * Launchpad: https://www.ti.com/tool/LAUNCHXL-F2800137\n* C2000 SDK: https://www.ti.com/tool/C2000WARE\n\
       * SDK release: 06_00_01\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: F280013
     device_selection_factor: 0
     device_type: MCU
@@ -8064,7 +8064,7 @@ target_device_descriptions:
       \nImportant links:\n* Product information: https://www.ti.com/product/TMS320F2800157\n\
       * Launchpad: https://www.ti.com/tool/LAUNCHXL-F2800157\n* C2000 SDK: https://www.ti.com/tool/C2000WARE\n\
       * SDK release: 06_00_01\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: F280015
     device_selection_factor: 1
     device_type: MCU
@@ -8076,7 +8076,7 @@ target_device_descriptions:
       \nImportant links:\n* Product information: https://www.ti.com/product/TMS320F280039C\n\
       * Launchpad: https://www.ti.com/tool/LAUNCHXL-F280039C\n* C2000 SDK: https://www.ti.com/tool/C2000WARE\n\
       * SDK release: 06_00_01\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: F28003
     device_selection_factor: 2
     device_type: MCU
@@ -8088,7 +8088,7 @@ target_device_descriptions:
       \nImportant links:\n* Product information: https://www.ti.com/product/TMS320F280049C\n\
       * Launchpad: https://www.ti.com/tool/LAUNCHXL-F280049C\n* C2000 SDK: https://www.ti.com/tool/C2000WARE\n\
       * SDK release: 06_00_01\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: F28004
     device_selection_factor: 3
     device_type: MCU
@@ -8100,7 +8100,7 @@ target_device_descriptions:
       \nImportant links:\n* Product information: https://www.ti.com/product/TMS320F28377D\n\
       * Launchpad: https://www.ti.com/tool/LAUNCHXL-F28379D\n* C2000 SDK: https://www.ti.com/tool/C2000WARE\n\
       * SDK release: 06_00_01\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: F2837
     device_selection_factor: 4
     device_type: MCU
@@ -8112,7 +8112,7 @@ target_device_descriptions:
       \nImportant links:\n* Product information: https://www.ti.com/product/TMS320F28P550SJ\n\
       * Launchpad: https://www.ti.com/tool/LAUNCHXL-F28P55X\n* C2000 SDK: https://www.ti.com/tool/C2000WARE\n\
       * SDK release: 06_00_01\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: F28P55
     device_selection_factor: 6
     device_type: MCU
@@ -8124,7 +8124,7 @@ target_device_descriptions:
       \nImportant links:\n* Product information: https://www.ti.com/product/TMS320F28P650DK\n\
       * Launchpad: https://www.ti.com/tool/LAUNCHXL-F28P65X\n* C2000 SDK: https://www.ti.com/tool/C2000WARE\n\
       * SDK release: 06_00_01\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: F28P65
     device_selection_factor: 5
     device_type: MCU
@@ -8136,7 +8136,7 @@ target_device_descriptions:
       \nImportant links:\n* Product information: https://www.ti.com/product/F29H850TU\n\
       * SOM EVM: https://www.ti.com/tool/F29H85X-SOM-EVM\n* C2000 SDK: https://www.ti.com/tool/download/F29H85X-SDK/\n\
       * SDK release: 01_00_00\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: F29H85
     device_selection_factor: 8
     device_type: MCU
@@ -8148,7 +8148,7 @@ target_device_descriptions:
       \nImportant links:\n* Product information: https://www.ti.com/product/MSPM0G3507\n\
       * Launchpad: https://www.ti.com/tool/LP-MSPM0G3507\n* MSPM0 SDK: https://www.ti.com/tool/MSPM0-SDK\n\
       * SDK release: 2_08_00_03\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: MSPM0G3507
     device_selection_factor: 9
     device_type: MCU
@@ -8160,7 +8160,7 @@ target_device_descriptions:
       \nImportant links:\n* Product information: https://www.ti.com/product/MSPM0G5187\n\
       * Launchpad: https://www.ti.com/tool/LP-MSPM0G5187\n* MSPM0 SDK: https://www.ti.com/tool/MSPM0-SDK\n\
       * SDK release: 2_08_00_03\n\nAdditional information:\n\n * Tiny ML model development\
-      \ information: https://github.com/TexasInstruments/tinyml-tensorlab \n"
+      \ information: https://github.com/musicalplatypus/tinyml-tensorlab \n"
     device_name: MSPM0G5187
     device_selection_factor: 10
     device_type: MCU

@@ -156,7 +156,7 @@ TARGET_SDK_VERSION_CC2755 = '9.12.00.00'
 TARGET_SDK_RELEASE_CC2755 = '09_12_00_00'
 
 
-TINYML_TARGET_DEVICE_ADDITIONAL_INFORMATION = '\n * Tiny ML model development information: https://github.com/TexasInstruments/tinyml-tensorlab \n'
+TINYML_TARGET_DEVICE_ADDITIONAL_INFORMATION = '\n * Tiny ML model development information: https://github.com/musicalplatypus/tinyml-tensorlab \n'
 
 ##### AM263 ######
 TARGET_DEVICE_SETUP_INSTRUCTIONS_AM263 = \

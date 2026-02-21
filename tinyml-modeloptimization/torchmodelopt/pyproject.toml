@@ -38,7 +38,7 @@ email = "thonse@ti.com"
 text = "BSD 3-Clause"
 
 [project.urls]
-Homepage = "https://github.com/TexasInstruments/tinyml-tensorlab/tree/main/tinyml-modeloptimization"
+Homepage = "https://github.com/musicalplatypus/tinyml-tensorlab/tree/main/tinyml-modeloptimization"
 
 [tool.setuptools]
 include-package-data = true
