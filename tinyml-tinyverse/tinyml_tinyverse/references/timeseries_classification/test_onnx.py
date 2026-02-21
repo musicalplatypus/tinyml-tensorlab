@@ -35,12 +35,12 @@ import platform
 from argparse import ArgumentParser
 from logging import getLogger
 
+import numpy as np
 import onnxruntime as ort
 import pandas as pd
 import torch
 import torcheval
 from tabulate import tabulate
-from tvm.script.ir_builder.tir import float32
 
 from tinyml_tinyverse.common.datasets import GenericTSDataset
 
