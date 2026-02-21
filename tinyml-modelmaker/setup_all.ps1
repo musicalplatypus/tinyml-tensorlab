@@ -25,7 +25,7 @@ Write-Output "If there is any issue, please remove these folders and try again $
 
 # Clone tinyml-tinyverse
 if (-not (Test-Path "$PARENT_DIR/tinyml-tinyverse")) {
-    git clone --depth 1 --branch main "${SOURCE_LOCATION}tinyml-tinyverse.git" "$PARENT_DIR/tinyml-tinyverse"
+    git clone --depth 1 --branch platypus_dev "${SOURCE_LOCATION}tinyml-tinyverse.git" "$PARENT_DIR/tinyml-tinyverse"
 }
 else {
     Get-ChildItem "$PARENT_DIR/tinyml-tinyverse"
@@ -33,7 +33,7 @@ else {
 
 # Clone tinyml-modeloptimization
 if (-not (Test-Path "$PARENT_DIR/tinyml-modeloptimization")) {
-    git clone --depth 1 --branch main "${SOURCE_LOCATION}tinyml-modeloptimization.git" "$PARENT_DIR/tinyml-modeloptimization"
+    git clone --depth 1 --branch platypus_dev "${SOURCE_LOCATION}tinyml-modeloptimization.git" "$PARENT_DIR/tinyml-modeloptimization"
 }
 else {
     Get-ChildItem "$PARENT_DIR/tinyml-modeloptimization"
