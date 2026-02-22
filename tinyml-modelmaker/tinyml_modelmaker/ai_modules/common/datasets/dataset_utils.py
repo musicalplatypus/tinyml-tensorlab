@@ -1,5 +1,5 @@
 #################################################################################
-# Copyright (c) 2023-2024, Texas Instruments
+# Copyright (c) 2023-2026, Texas Instruments
 # All Rights Reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,8 +39,6 @@ import re
 from itertools import accumulate
 from random import seed, shuffle
 
-# import PIL
-# from PIL import ImageOps
 from xml.etree.ElementTree import Element as ET_Element
 
 import numpy as np

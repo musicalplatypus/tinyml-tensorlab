@@ -1,5 +1,5 @@
 #################################################################################
-# Copyright (c) 2023-2024, Texas Instruments
+# Copyright (c) 2023-2026, Texas Instruments
 # All Rights Reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -92,7 +92,7 @@ from cryptography.fernet import Fernet
 from tabulate import tabulate
 from torcheval.metrics.functional import multiclass_confusion_matrix, multiclass_f1_score, multiclass_auroc, r2_score, mean_squared_error
 
-from ..models.generic_models import FEModel  # , FEModel2
+from tinyml_modelzoo.models.feature_extraction import FEModel
 from tinyml_torchmodelopt.quantization import (
     TinyMLQuantizationVersion, TinyMLQuantizationMethod, TinyMLQConfigType,
     GenericTinyMLQATFxModule, TINPUTinyMLQATFxModule, GenericTinyMLPTQFxModule, TINPUTinyMLPTQFxModule)
@@ -844,28 +844,9 @@ def get_mse(output,target):
 def smape(y_true, y_pred): # y_true and y_pred must be tensors
     numerator = torch.abs(y_pred - y_true)
     denominator = (torch.abs(y_true) + torch.abs(y_pred)) / 2.0
-    denominator=np.where(denominator==0,1e-8,denominator)  # Avoid division by zero
+    denominator = torch.where(denominator == 0, torch.tensor(1e-8, device=denominator.device, dtype=denominator.dtype), denominator)  # Avoid division by zero
     return torch.mean(numerator / denominator) * 100  # Multiply by 100 to get percentage
-    
-def number_of_correct(pred, target):
-    # count number of correct predictions
-    return pred.squeeze().eq(target).sum().item()
 
-
-def get_likely_index(tensor):
-    # find most likely label index for each element in the batch
-    return tensor.argmax(dim=-1)
-
-
-def accuracy1(output, target, topk=(1,)):
-    with torch.no_grad():
-        correct = 0
-        res = []
-        pred = get_likely_index(output)
-        correct += number_of_correct(pred, target)
-        res.append(100. * correct / target.size(0))
-        # print(pred,correct,res)
-        return res
 
 def mkdir(path):
     try:
@@ -1084,13 +1065,13 @@ def train_one_epoch_regression(model, criterion, optimizer, data_loader, device,
     metric_logger = MetricLogger(delimiter="  ", phase=phase)
     metric_logger.add_meter("lr", window_size=1, fmt="{value}")
     metric_logger.add_meter("samples/s", window_size=10, fmt="{value}")
-
+    print_freq = print_freq if print_freq else len(data_loader)
     header = f"Epoch: [{epoch}]"
     # TODO: If transform is required
     if transform:
         transform = transform.to(device)
-    # for _, data, target in metric_logger.log_every(data_loader, print_freq, header):
-    for _, data, target in data_loader:
+    for _, data, target in metric_logger.log_every(data_loader, print_freq, header):
+    # for _, data, target in data_loader:
         start_time = timeit.default_timer()
         data = data.to(device).float()
         target = target.to(device).float()
@@ -1227,14 +1208,20 @@ def save_forecasting_predictions_csv(true_values, predictions, output_dir,header
     Save predictions in CSV format with alternating ground truth and predicted values.
 
     Args:
-        true_values (np.ndarray): Ground truth values [batch_size,forecast_horizon, n_variables]
-        predictions (np.ndarray): Predicted values [batch_size,forecast_horizon, n_variables]
+        true_values (np.ndarray or torch.Tensor): Ground truth values [batch_size,forecast_horizon, n_variables]
+        predictions (np.ndarray or torch.Tensor): Predicted values [batch_size,forecast_horizon, n_variables]
         output_dir (str): Base directory to save CSV files
         header_row (list): List of variable names: column number in key value pairs
         forecast_horizon (int): Number of time steps to forecast
     """
     csv_dir=os.path.join(output_dir, 'predictions_csv')
     os.makedirs(csv_dir, exist_ok=True)
+
+    # Convert tensors to numpy arrays if needed
+    if isinstance(true_values, torch.Tensor):
+        true_values = true_values.detach().cpu().numpy()
+    if isinstance(predictions, torch.Tensor):
+        predictions = predictions.detach().cpu().numpy()
 
     for idx,item in enumerate(header_row):
         for target_variable_name in item:
@@ -1255,13 +1242,11 @@ def evaluate_regression(model, criterion, data_loader, device, transform, log_su
     target_array = torch.Tensor([]).to(device, non_blocking=True)
     predictions_array = torch.Tensor([]).to(device, non_blocking=True)
     with torch.no_grad():
-        # for _, data, target in metric_logger.log_every(data_loader, print_freq, header):
         val_loss = 0
         target_list = []
         predictions_list = []
+        # for _, data, target in metric_logger.log_every(data_loader, print_freq, header):
         for _, data, target in data_loader:
-
-
             data = data.to(device, non_blocking=True).float()
             target = target.to(device, non_blocking=True).float()
 
@@ -1658,8 +1643,10 @@ def init_optimizer(model, opt_name="sgd", lr=0.1, momentum=0.9, weight_decay=4e-
                                         weight_decay=weight_decay, eps=0.0316, alpha=0.9)
     elif opt_name == 'adam':
         optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
+    elif opt_name == 'adamw':
+        optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     else:
-        logger.warning("Invalid optimizer {}. Only SGD and RMSprop, Adam are supported. Defaulting to Adam".format(opt_name))
+        logger.warning("Invalid optimizer {}. Only SGD, RMSprop, Adam and AdamW are supported. Defaulting to Adam".format(opt_name))
         optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
     return optimizer
 
@@ -1675,6 +1662,9 @@ def init_lr_scheduler(
                                                                        T_max=epochs - lr_warmup_epochs)
     elif lr_scheduler == 'exponentiallr':
         main_lr_scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=lr_gamma)
+    elif lr_scheduler=='none':
+        main_lr_scheduler = torch.optim.lr_scheduler.ConstantLR(optimizer, factor=1.0,total_iters=0)
+        return main_lr_scheduler
     else:
         raise RuntimeError("Invalid lr scheduler '{}'. Only StepLR, CosineAnnealingLR and ExponentialLR "
                            "are supported.".format(lr_scheduler))
@@ -1699,18 +1689,18 @@ def init_lr_scheduler(
     return lr_scheduler
 
 
-def quantization_wrapped_model(model, quantization=0, quantization_method='QAT', weight_bitwidth=8, activation_bitwidth=8, epochs=10, output_dequantize=False):
+def quantization_wrapped_model(model, quantization=0, quantization_method='QAT', weight_bitwidth=8, activation_bitwidth=8, epochs=10, output_int=True, partial_quantization = False):
     logger = getLogger('root.utils.quantization_wrapped_model')
     if quantization == TinyMLQuantizationVersion.QUANTIZATION_GENERIC:
         if quantization_method == TinyMLQuantizationMethod.QAT:
-            model = GenericTinyMLQATFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth).qconfig_type, total_epochs=epochs)
+            model = GenericTinyMLQATFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, partial_quantization).qconfig_type, total_epochs=epochs)
         if quantization_method == TinyMLQuantizationMethod.PTQ:
-            model = GenericTinyMLPTQFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth).qconfig_type, total_epochs=epochs)
+            model = GenericTinyMLPTQFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, partial_quantization).qconfig_type, total_epochs=epochs)
     elif quantization == TinyMLQuantizationVersion.QUANTIZATION_TINPU:
         if quantization_method == TinyMLQuantizationMethod.QAT:
-            model = TINPUTinyMLQATFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth).qconfig_type, total_epochs=epochs, output_dequantize=output_dequantize)
+            model = TINPUTinyMLQATFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, partial_quantization).qconfig_type, total_epochs=epochs, output_int=output_int)
         if quantization_method == TinyMLQuantizationMethod.PTQ:
-            model = TINPUTinyMLPTQFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth).qconfig_type, total_epochs=epochs, output_dequantize=output_dequantize)
+            model = TINPUTinyMLPTQFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, partial_quantization).qconfig_type, total_epochs=epochs, output_int=output_int)
     if quantization:
         logger.info(f"Proceeding with {quantization_method} quantization")
     return model

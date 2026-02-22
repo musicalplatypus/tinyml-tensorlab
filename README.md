@@ -2,6 +2,9 @@
 
 <hr>
 
+Detailed User Guide: [TI Tiny ML Tensorlab User Guide](https://software-dl.ti.com/C2000/esd/mcu_ai/01_03_00/user_guide/index.html)
+<hr>
+
 ##### Table of Contents
 
 - [Introduction](#introduction)
@@ -17,16 +20,17 @@
 ## Introduction
 
 The Tiny ML Tensorlab repository is meant to be as a starting point to install and explore TI's AI offering for MCUs.
-It helps to install all the required repositories to get started. Currently, it can handle Time series Classification, Regression and Anomaly Detection tasks. 
+It helps to install all the required repositories to get started. Currently, it can handle Time Series Classification, Regression, Forecasting, Anomaly Detection, and Image Classification tasks. 
 
 
 Once you clone this repository, you will find the following repositories present within the `tinyml-tensorlab` directory:
 * `tinyml-tensorlab`: This repo, serves as a blank wrapper for customers to clone all the tinyml repos at one shot. 
-![image](./assets/mcu_ai_repo_connection.png)
+
 
 The other repositories are here for a purpose:
+* `tinyml-modelzoo`: Contains all model definitions, example configs, and pre-trained checkpoints. This is the single source of truth for models.
+  * **_This is your home repo for running examples and adding new models._**
 * `tinyml-modelmaker`: Based on user configuration (yaml files), stitches a flow with relevant scripts to call from tinyverse. This stitches the scripts into a flow of data loading/training/compilation
-  * **_This is your home repo. Most of your work will be taking place from this directory._**
 * `tinyml-tinyverse` : Individual scripts to load data, do preprocessing, AI training, compilation(using NNC/TVM)
 * `tinyml-modeloptimization`: Model optimization toolkit that is necessary for quantization for 2bit/4bit/8bit weights in QAT(Quantization Aware Training)/PTQ(Post Training Quantization) flows for TI devices with or without NPU.
   * As a customer developing models/flows, it is highly likely that you would not have to edit files in this repo
@@ -40,11 +44,67 @@ The other repositories are here for a purpose:
 |-------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | BYOD        | <ul><li> I will get my own data (format it according to Modelmaker Expectations)</li><li> I expect a compiled binary model as my final output for a device TI supports | <ul><li> I will use TI provided Models as it is                                      | :white_check_mark:  - edit config_*.yaml files. refer [this](./tinyml-modelmaker/docs/UnderstandingConfigFile.md) to understand the config file. | :x:             | :white_check_mark:                                                                                                                                                                                                                                                                                                                                                                                                             |
 | BYOD        | <ul><li> I will get my own data (format it according to Modelmaker Expectations)</li><li> I expect a compiled binary model as my final output for a device TI supports | <ul><li> I will use TI provided Models but change the parameters (like channels etc) | :white_check_mark:  - Refer [this](./tinyml-modelmaker/docs/Configuring_Model_layer_params.md) doc                                               | :x:             | :x:                                                                                                                                                                                                                                                                                                                                                                                                             |
-| BYOM        | <ul><li> I will get my own data (format it according to Modelmaker Expectations)</li><li> I expect a compiled binary model as my final output for a device TI supports | <ul><li> I want to design my own models / Modify TI provided models.                 | :white_check_mark:  - Refer [this](./tinyml-modelmaker/docs/AddingModels.md) doc                                                                 | :white_check_mark:            | :x:                                                                                                                                                                                                                                                                                                                                                                                                             |
+| BYOM        | <ul><li> I will get my own data (format it according to Modelmaker Expectations)</li><li> I expect a compiled binary model as my final output for a device TI supports | <ul><li> I want to design my own models / Modify TI provided models.                 | :white_check_mark:  - Refer [this](./tinyml-modelzoo/ADDING_NEW_MODELS.md) guide in tinyml-modelzoo                                              | :x:            | :x:                                                                                                                                                                                                                                                                                                                                                                                                             |
 | BYOM        | <ul><li> I have trained an (NPU compatible, if applicable) model and created an onnx model. </li>                                                                      | <ul><li>I need help to compile for a TI supported device.                            | :white_check_mark:  - Refer [this](./tinyml-modelmaker/docs/BYOM_for_Compilation.md) doc to understand editing the config file                                     | :x:             | :x:                                                                                                                                                                                                                                                                                                                                                                                                             |
 | BYOM        | <ul><li> I have my own AI Training Framework, I have created a floating point model. </li>                                                                             | <ul><li>I need help to create a NPU Aware Quantized model                            | :x:                                                                                                                                              | :x:             | <input type="checkbox" disabled checked/> - Refer [this](https://github.com/TexasInstruments/tinyml-tensorlab/blob/main/tinyml-modeloptimization/torchmodelopt/examples/motor_fault_time_series_classification) example.<br/> <ul><li> Follow it up  using [TIs Neural Network Compiler](https://software-dl.ti.com/mctools/nnc/mcu/users_guide/) which can help you get your AI model compatible with TI MCUs. |
 
 * A lot more [READMEs](./tinyml-modelmaker/docs) are present under the Tiny ML Modelmaker Repo
+
+<hr>
+
+## Supported Target Devices
+
+The TinyML toolchain supports a wide range of TI MCUs across multiple device families:
+
+<details>
+<summary>Click to expand device list</summary>
+
+### C2000 DSP Family
+| Device | NPU | Description |
+|--------|-----|-------------|``
+| F28P55 | Yes | 32-bit MCU - Recommended for complex models |
+| F28P65 | No | 32-bit MCU, 150 MHz |
+| F29H85 | No | 64-bit MCU with C29x core |
+| F29P58 | No | 64-bit MCU with C29x core |
+| F29P32 | No | 64-bit MCU with C29x core |
+| F2837 | No | 32-bit dual-core MCU, 200 MHz |
+| F28003 | No | 32-bit MCU, 100 MHz |
+| F28004 | No | 32-bit MCU, 100 MHz |
+| F280013 | No | 32-bit MCU, 100 MHz |
+| F280015 | No | 32-bit MCU, 120 MHz |
+
+### MSPM0 Family (Arm Cortex-M0+)
+| Device | NPU | Description |
+|--------|-----|-------------|
+| MSPM0G3507 | No | 80 MHz - Ultra-low power |
+| MSPM0G3519 | No | 80 MHz - Ultra-low power |
+| MSPM0G5187 | Yes | 80 MHz - Ultra-low power, NPU-accelerated |
+
+### MSPM33C Family (Arm Cortex-M33)
+| Device | NPU | Description |
+|--------|-----|-------------|
+| MSPM33C32 | No | 160 MHz with TrustZone |
+| MSPM33C34 | No | 160 MHz Arm Cortex-M33 |
+| AM13E2 | Yes | Arm Cortex-M33, NPU-accelerated (CLI only) |
+
+### AM26x Family (Arm Cortex-R5)
+| Device | NPU | Description |
+|--------|-----|-------------|
+| AM263 | No | Quad-core Arm Cortex-R5F, 400 MHz |
+| AM263P | No | Quad-core Arm Cortex-R5F, 400 MHz |
+| AM261 | No | Single-core Arm Cortex-R5F, 400 MHz |
+
+### Connectivity Devices (Wireless)
+| Device | NPU | Description |
+|--------|-----|-------------|
+| CC2755 | No | 96 MHz Arm Cortex-M33 wireless MCU |
+| CC1352 | No | Arm Cortex-M4 wireless MCU |
+| CC1354 | No | Arm Cortex-M33 wireless MCU |
+| CC35X1 | No | Arm Cortex-M33 wireless MCU |
+
+</details>
+
+For detailed device-task support matrix, see [DEVICE_TASK_SUPPORT.md](./tinyml-modelmaker/DEVICE_TASK_SUPPORT.md).
 
 <hr>
 
@@ -121,11 +181,11 @@ To begin with, you can use the repo as a `developer` or `user`.
     tinyml_modelmaker.get_set_go(config)
     ```
     ### Note
-    * Several examples of configs are present (Check *.yaml files at `tinyml-modelmaker` repository)
+    * Several examples of configs are present in the `tinyml-modelzoo/examples/` directory
       * You can load one like this:
     * ```python
-      import yaml  
-      with open('examples/dc_arc_fault/config_dsk.yaml') as fp:
+      import yaml
+      with open('tinyml-modelzoo/examples/dc_arc_fault/config_dsk.yaml') as fp:
           config = yaml.safe_load(fp)
       ```
     ### Important
@@ -146,17 +206,19 @@ To begin with, you can use the repo as a `developer` or `user`.
     1. Clone this repository
     2. `cd tinyml-tensorlab/tinyml-modelmaker`
     3. Execute: ``` ./setup_all.sh ```
-    4. Run the following (to install local repositories, ideal for developers): 
+    4. Run the following (to install local repositories, ideal for developers):
         ```bash
         cd ../tinyml-tinyverse
         pip install -e .
-        cd tinyml-modeloptimization/torchmodelopt
+        cd ../tinyml-modeloptimization/torchmodelopt
         pip install -e .
-        cd ../tinyml-modelmaker
+        cd ../../tinyml-modelzoo
+        pip install -e .
         ```
-    5. Now you're ready to go!
-    ```
-    run_tinyml_modelmaker.sh examples/dc_arc_fault/config_dsk.yaml
+    5. Now you're ready to go! Run examples from the `tinyml-modelzoo` directory:
+    ```bash
+    cd tinyml-modelzoo
+    ./run_tinyml_modelzoo.sh examples/dc_arc_fault/config_dsk.yaml
     ```
     </details>
     
@@ -194,10 +256,15 @@ To begin with, you can use the repo as a `developer` or `user`.
         cd ..\tinyml-modeloptimization\torchmodelopt
         python -m pip install --editable .
         ```
-    * We can run it now!
+      * Step 1.6: Installing modelzoo (contains example configs and models)
+        ```powershell
+        cd ..\..\tinyml-modelzoo
+        python -m pip install --editable .
+        ```
+    * We can run it now! Run examples from the `tinyml-modelzoo` directory:
     ```powershell
-    cd ..\..\tinyml-modelmaker
-    python .\tinyml_modelmaker\run_tinyml_modelmaker.py .\examples\dc_arc_fault\config_dsk.yaml
+    cd ..\tinyml-modelzoo
+    .\run_tinyml_modelzoo.bat examples\dc_arc_fault\config_dsk.yaml
     ```
     
 </details>
@@ -227,7 +294,8 @@ To begin with, you can use the repo as a `developer` or `user`.
 
 </details>
 
-* To empower your solution with TIs AI, you can use the **[Tiny ML Modelmaker](./tinyml-modelmaker)** for an advanced set of capabilities.
+* To empower your solution with TI's AI, you can use the **[Tiny ML ModelZoo](./tinyml-modelzoo)** examples for an advanced set of capabilities.
+  * Run examples: `cd tinyml-modelzoo && ./run_tinyml_modelzoo.sh examples/dc_arc_fault/config_dsk.yaml` (Linux) or `cd tinyml-modelzoo && run_tinyml_modelzoo.bat examples\dc_arc_fault\config_dsk.yaml` (Windows)
   * Supports any Time series Classification tasks (including Arc Fault and Motor Bearing Fault Classification)
 * You can also use the [Edge AI Studio Model Composer GUI](https://dev.ti.com/modelcomposer/) to quickly train an AI model (No Code Platform)
   * This supports only Arc Fault and Motor Bearing Fault Classification applications currently.
@@ -238,6 +306,30 @@ To begin with, you can use the repo as a `developer` or `user`.
 
 ## What is New
 
+- [2026-Feb] Release version 1.3.0 of the software
+  <details>
+
+  - Device Support: 22 MCU devices supported: 
+    - AM1x: AM13E2
+    - C2000 F28: F280013, F280015, F28003, F28004, F2837, F28P55, F28P65
+    - C2000 F29: F29H85, F29P58, F29P32
+    - MSP M0: MSPM0G3507, MSPM0G3519, MSPM0G5187
+    - MSP M33: MSPM33C32,
+    - Connectivity: CC2755, CC1352, CC1354, CC35X1, 
+    - AM26x: AM263, AM263P, AM261
+  - Flows:
+    - Timeseries Anomaly Detection flow supported
+    - On Device Learning Mode Enabled
+  - Applications Supported
+    - 22 (4 generic + 18 specific applications)
+  - Models:
+    - 50+ generic models added over classification, regression, forecasting and anomaly detection tasks.
+  - Model Optimization:
+    - Partial Quantization Supported to enable best of precision and latency for regression models.
+  - Compilation:
+      - Upgraded TI MCU Neural Network Compiler for MCUs to 2.1.1 LTS
+
+  </details>
 - [2025-Nov] Release version 1.2.0 of the software
 
     <details>
