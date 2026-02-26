@@ -173,7 +173,7 @@ To begin with, you can use the repo as a `developer` or `user`.
 
     Install this repository as a Python package:
     ```
-    pip install git+https://github.com/musicalplatypus/tinyml-tensorlab.git@main#subdirectory=tinyml-modelmaker
+    pip install git+https://github.com/musicalplatypus/tinyml-tensorlab.git@platypus_dev_1.3#subdirectory=tinyml-modelmaker
     ```
     It is as simple as:
     ```python
