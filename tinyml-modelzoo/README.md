@@ -58,7 +58,7 @@ tinyml-modelzoo/
 ### Prerequisites
 
 1. Python 3.10 environment with the Tiny ML toolchain installed
-2. Clone the [tinyml-tensorlab](https://github.com/TexasInstruments/tinyml-tensorlab) repository
+2. Clone the [tinyml-tensorlab](https://github.com/musicalplatypus/tinyml-tensorlab) repository
 
 ### Running an Example
 
@@ -455,4 +455,4 @@ BSD 3-Clause License. See [LICENSE](LICENSE) for details.
 
 ---
 
-**Questions or Issues?** Open an issue on [GitHub](https://github.com/TexasInstruments/tinyml-tensorlab/issues).
+**Questions or Issues?** Open an issue on [GitHub](https://github.com/musicalplatypus/tinyml-tensorlab/issues).

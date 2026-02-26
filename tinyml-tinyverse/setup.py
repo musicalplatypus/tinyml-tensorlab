@@ -38,7 +38,7 @@ if __name__ == '__main__':
 #         description='Tiny ML TinyVerse',
 #         long_description=long_description,
 #         long_description_content_type='text/markdown',
-#         url='https://github.com/TexasInstruments/tinyml-tensorlab/tree/main/tinyml-tinyverse',
+#         url='https://github.com/musicalplatypus/tinyml-tensorlab/tree/main/tinyml-tinyverse',
 #         author='Adithya Thonse',
 #         author_email='thonse@ti.com',
 #         classifiers=[
@@ -51,7 +51,7 @@ if __name__ == '__main__':
 #         include_package_data=True,
 #         install_requires=[],
 #         project_urls={
-#             'Source': 'https://github.com/TexasInstruments/tinyml-tensorlab/tree/main/tinyml-tinyverse',
+#             'Source': 'https://github.com/musicalplatypus/tinyml-tensorlab/tree/main/tinyml-tinyverse',
 #             'Bug Reports': 'https://e2e.ti.com/support/processors/',
 #         },
 #     )

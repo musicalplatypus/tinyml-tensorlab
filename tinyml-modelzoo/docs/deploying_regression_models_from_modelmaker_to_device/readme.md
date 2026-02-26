@@ -38,7 +38,7 @@ Ensure you have a TI LaunchPad for your target device. The following devices are
 
 ### Software
 
-1. **TinyML ModelMaker**: Latest version from [TinyML Tensorlab GitHub Repository](https://github.com/TexasInstruments/tinyml-tensorlab) Current version: 1.3.0.
+1. **TinyML ModelMaker**: Latest version from [TinyML Tensorlab GitHub Repository](https://github.com/musicalplatypus/tinyml-tensorlab) Current version: 1.3.0.
 
 After running a regression example, ModelMaker generates the following files required for deploying the model on MCUs (Refer to the [Generic Timeseries Regression Example](../../examples/generic_timeseries_regression/readme.md)).
 

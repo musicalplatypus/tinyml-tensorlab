@@ -33,7 +33,7 @@ email = "thonse@ti.com"
 text = "BSD 3-Clause"
 
 [project.urls]
-Homepage = "https://github.com/TexasInstruments/tinyml-tensorlab/tree/main/tinyml-modelzoo"
+Homepage = "https://github.com/musicalplatypus/tinyml-tensorlab/tree/main/tinyml-modelzoo"
 "Bug Reports" = "https://e2e.ti.com/support/processors/"
 
 [tool.setuptools]

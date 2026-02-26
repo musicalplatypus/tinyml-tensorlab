@@ -291,7 +291,7 @@ TARGET_SDK_VERSION_CC35X1 = '9.21.00.15'
 TARGET_SDK_RELEASE_CC35X1 = '09_21_00_15'
 
 
-TINYML_TARGET_DEVICE_ADDITIONAL_INFORMATION = '\n * Tiny ML model development information: https://github.com/TexasInstruments/tinyml-tensorlab \n'
+TINYML_TARGET_DEVICE_ADDITIONAL_INFORMATION = '\n * Tiny ML model development information: https://github.com/musicalplatypus/tinyml-tensorlab \n'
 
 ##### AM263 ######
 TARGET_DEVICE_SETUP_INSTRUCTIONS_AM263 = \

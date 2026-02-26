@@ -208,7 +208,7 @@ To evaluate the performance of generic models for motor fault classification, we
 3. **Input256_FFT_128Feature_1Frame_3InputChannel_removeDC_2D1**
 4. **Input128_RAW_128Feature_1Frame_3InputChannel_removeDC_2D1**
 
-*You can read more about the definitions of these presets [here](https://github.com/TexasInstruments/tinyml-tensorlab/tree/main/tinyml-modelmaker/examples/data_processing_and_feature_extraction#predefined-feature-extraction-presets).*
+*You can read more about the definitions of these presets [here](https://github.com/musicalplatypus/tinyml-tensorlab/tree/main/tinyml-modelmaker/examples/data_processing_and_feature_extraction#predefined-feature-extraction-presets).*
 
 ### Accuracy Results
 
