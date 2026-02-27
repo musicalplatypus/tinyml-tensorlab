@@ -22,7 +22,7 @@
 
 | Property | Value |
 |---|---|
-| Version | 1.2.0 (November 2025) |
+| Version | 1.3.0.dev0 (February 2026) |
 | License | BSD 3-Clause |
 | Python | 3.10 required |
 | ML Framework | PyTorch 2.7.1 |
@@ -416,6 +416,53 @@ graph TB
 | Orange | tinyml-modeloptimization (quantization & NAS) |
 | Teal | tinyml-modelzoo (catalog) |
 | Grey | External TI tools |
+
+---
+
+## Training Performance Optimizations
+
+The training engine (`tinyml-tinyverse`) includes several performance optimizations, some applied unconditionally and others available as opt-in flags via the config or mmcli.
+
+### Unconditional Optimizations
+
+These are always active and benefit all platforms:
+
+| Optimization | Location | Impact |
+|---|---|---|
+| **O(n) eval accumulation** | `utils.py` `evaluate_classification` | Replaced per-batch `torch.cat` (O(n^2) tensor copies) with list accumulation + single `torch.cat` at epoch end. ~2x speedup on eval. |
+| **Epoch-end metrics** | `utils.py` `evaluate_classification` | F1 score and confusion matrix computed once at epoch end instead of per-batch, eliminating redundant computation. |
+| **`set_to_none=True`** | `utils.py` all `optimizer.zero_grad()` calls | Sets gradients to `None` instead of zeroing, avoiding unnecessary memset. ~17% micro-benchmark improvement. |
+| **Persistent workers** | `train_base.py` `create_data_loaders` | `persistent_workers=True` keeps DataLoader workers alive across epochs, avoiding expensive process respawn (especially on macOS `spawn` start method). |
+| **Fixed `pin_memory`** | `train_base.py` `create_data_loaders` | Changed from `gpu > 0` (always False on MPS) to `torch.cuda.is_available() and gpu >= 0`. Only enables pin_memory when CUDA is actually available. |
+
+### Opt-in Optimizations
+
+These are disabled by default and controlled via config or mmcli flags. They primarily benefit CUDA and may add overhead on MPS.
+
+| Flag | Config key | CLI flag | Effect |
+|---|---|---|---|
+| **torch.compile** | `training.compile_model=1` | `--compile-model 1` | Enables `torch.compile`. Uses `inductor` backend on CUDA (kernel fusion), `aot_eager` on MPS. Benchmarked -26% on MPS — recommended for CUDA only. |
+| **Native AMP** | `training.native_amp=True` | `--native-amp` | Enables `torch.amp.autocast` mixed precision. GradScaler used on CUDA only. Benchmarked -29% on MPS — recommended for CUDA only. |
+
+### Config Pipeline for Performance Flags
+
+```
+mmcli --compile-model 1 --native-amp
+  → builder.py sets training.compile_model=1, training.native_amp=True
+    → YAML config → modelmaker params.py defaults
+      → timeseries_base.py _build_common_train_argv() → --compile-model 1
+      → timeseries_base.py run() appends → --native-amp
+        → tinyml-tinyverse argparser → train.py creates torch.compile / AMP context
+```
+
+### Key Source Files
+
+| File | Role |
+|---|---|
+| `tinyml-tinyverse/.../common/utils/utils.py` | Training/eval loops with optimizer and metric optimizations |
+| `tinyml-tinyverse/.../common/train_base.py` | DataLoader config, torch.compile, AMP context/scaler setup |
+| `tinyml-modelmaker/.../timeseries/params.py` | Default config values for `compile_model`, `native_amp` |
+| `tinyml-modelmaker/.../timeseries/training/.../timeseries_base.py` | Argv construction passing flags to tinyml-tinyverse |
 
 ---
 

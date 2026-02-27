@@ -189,11 +189,59 @@ Bumped all 6 version files (3 pyproject.toml + 3 version.py).
 | `bc31bd6` | Version bump 1.2.0.dev0 | Superseded; bumped to 1.3.0.dev0 instead |
 | `1634334` | TVM imports | Fixed upstream |
 
+## Post-Porting: New Development
+
+After the porting phase, additional work was done on the `platypus_dev_1.3` branch:
+
+### 15. `f9a6c91` — Fix MPS compatibility: move torcheval metrics to CPU
+
+✅ **DONE** — New commit
+
+Moved `torcheval` metric computations (MulticlassAUROC) to CPU before computation,
+fixing a crash on MPS where torcheval operators are not supported.
+
+---
+
+### 16. `36bd426` — Optimize training performance
+
+✅ **DONE** — New commit
+
+Training engine optimizations in tinyml-tinyverse:
+- **O(n) eval**: Replaced O(n^2) `torch.cat` accumulation with list + single cat at epoch end (~2x eval speedup)
+- **Epoch-end metrics**: F1 score and confusion matrix computed once at epoch end
+- **`set_to_none=True`**: All `optimizer.zero_grad()` calls (~17% micro-benchmark improvement)
+- **Persistent workers**: `persistent_workers=True` in DataLoaders
+- **Fixed pin_memory**: Only enables when CUDA is available (was always False on MPS)
+- **torch.compile support**: Opt-in via `--compile-model 1` (inductor on CUDA, aot_eager on MPS)
+- **Native AMP support**: Opt-in via `--native-amp` (autocast + GradScaler on CUDA)
+
+Benchmark results (MPS, Apple M3 Max):
+- torch.cat fix: **+97.7%** improvement
+- set_to_none: **+17%** improvement
+- torch.compile: **-26%** (harmful on MPS, CUDA-only)
+- native AMP: **-29%** (harmful on MPS, CUDA-only)
+
+---
+
+### 17. Thread performance flags through modelmaker config pipeline
+
+✅ **DONE** — Committed with documentation update
+
+- Added `compile_model` and `native_amp` defaults to `params.py`
+- Updated `timeseries_base.py` to pass `--compile-model` and `--native-amp` to tinyml-tinyverse argv
+- Updated ARCHITECTURE.md with Training Performance Optimizations section
+
+---
+
 ## Branch Status
 
-`platypus_dev_1.3`: **13 commits** ahead of `origin/main`, pushed to remote.
+`platypus_dev_1.3`: **16 commits** ahead of `origin/main`.
 
 ```
+(new)  Thread performance flags through modelmaker pipeline + update docs
+36bd426 Optimize training performance: torch.compile, AMP, persistent workers, eval efficiency
+f9a6c91 Fix MPS compatibility: move torcheval metrics to CPU before computation
+8488b6f Update PORTING_ASSESSMENT.md: mark all phases complete
 5f40eaa Add pytest test suite for tinyml-modelmaker core modules
 608c2d8 Replace assert/sys.exit/raise-string with proper exceptions across tinyml-modelmaker
 868ffb9 Replace magic strings with named constants
