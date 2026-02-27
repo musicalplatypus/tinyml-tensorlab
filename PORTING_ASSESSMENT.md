@@ -3,6 +3,7 @@
 **Date:** 2026-02-26
 **Base branch:** `platypus_dev_1.3` (from `origin/main` at `6bda92d`)
 **Source branch:** `platypus_dev` (14 commits ahead of the old `origin/main`)
+**Status:** ✅ **COMPLETE** — all phases executed, branch pushed to remote
 
 ## Upstream Changes Summary
 
@@ -27,32 +28,18 @@ Key upstream changes:
 
 ### 1. `dcf7ee9` — Add ARCHITECTURE.md
 
-**Portability: EASY**
-
-New standalone file, no conflicts possible. Cherry-pick directly.
-
-```
-git cherry-pick dcf7ee9
-```
+✅ **DONE** — Cherry-picked as `b448116`
 
 ---
 
 ### 2. `73fa781` — Fix @classmethod methods using self instead of cls
 
-**Portability: VERIFY FIRST**
+✅ **DONE** — Re-applied to 5 remaining files as `e690110`
 
-Touches 9 files across modelmaker (compilation, datasets, runner, training files).
-Upstream refactored many of these files heavily. The `self → cls` fixes may already
-be resolved upstream, or the affected `@classmethod` methods may no longer exist.
-
-**Action:** Check each of the 9 files in `origin/main` to see if the bug still
-exists. If it does, re-apply manually. If upstream fixed it, drop this commit.
-
-Files to check:
+Upstream fixed 4 of the original 9 files. Applied the fix to:
 - `ai_modules/common/compilation/tinyml_benchmark.py`
 - `ai_modules/common/datasets/__init__.py`
 - `ai_modules/timeseries/runner.py`
-- `ai_modules/timeseries/training/tinyml_tinyverse/timeseries_*.py` (4 files)
 - `ai_modules/vision/runner.py`
 - `ai_modules/vision/training/tinyml_tinyverse/image_classification.py`
 
@@ -60,224 +47,164 @@ Files to check:
 
 ### 3. `75bea31` — Replace magic strings with named constants
 
-**Portability: CONFLICT-HEAVY — Re-implement**
+✅ **DONE** — Re-implemented as `868ffb9`
 
-Touches 13 files including `constants.py`, `params.py`, `training/__init__.py`
-for both timeseries and vision. Upstream modified many of these same files with
-different changes. Cherry-pick will produce extensive conflicts.
-
-**Action:** Re-implement against the new upstream codebase. Audit `origin/main`
-for remaining magic strings and apply the same pattern (extracting string literals
-into named constants in `constants.py`).
+Added to both timeseries and vision `constants.py`:
+- `TRAINING_BACKEND_TINYML_TINYVERSE`
+- `DATA_DIR_CLASSES`, `DATA_DIR_FILES`, `DATA_DIR_IMAGES`
+- Used existing `TRAINING_DEVICE_CUDA` in `params.py`
 
 ---
 
 ### 4. `2b2ba94` — Add pytest test suite for tinyml-modelmaker
 
-**Portability: MOSTLY PORTABLE**
+✅ **DONE** — Re-implemented as `5f40eaa`
 
-Adds 7 new test files + pyproject.toml changes. The new files won't conflict,
-but tests may reference APIs from other platypus_dev refactors (e.g.
-`resolve_paths()`, `BaseModelTraining`) that don't exist in the upstream code.
+Created 5 test files adapted to the new 1.3.0 API:
+- `test_config_dict.py` (6 tests)
+- `test_constants.py` (16 tests)
+- `test_dataset_utils.py` (6 tests)
+- `test_misc_utils.py` (10 tests)
+- `test_protocols.py` (updated with `importorskip("tvm")`)
 
-**Action:** Cherry-pick, then review each test file. Fix imports and assertions
-that reference platypus_dev-specific refactors. Key files:
-- `tests/conftest.py` — may import our `resolve_paths`
-- `tests/test_misc_utils.py` — may test `resolve_paths()`
-- `tests/test_base_training.py` — references our `base_training.py` (superseded)
+Results: **47 passed, 1 skipped** (test_protocols requires TVM)
 
 ---
 
 ### 5. `9ba1339` — Replace print() with logging module
 
-**Portability: VERIFY FIRST**
+✅ **DONE** — Re-applied across 8 files as `ee684f8`
 
-Upstream's major refactor likely addressed some or all `print()` usage.
-
-**Action:** Search `origin/main` for remaining `print()` calls in modelmaker
-source (excluding tests). If upstream already uses logging throughout, drop this
-commit. If `print()` calls remain, re-apply the logging pattern to those files.
-
-```
-grep -rn "^\s*print(" origin/main:tinyml-modelmaker/tinyml_modelmaker/ --include="*.py"
-```
+Files updated:
+- `timeseries/runner.py`, `vision/runner.py`
+- `timeseries/training/__init__.py`, `vision/training/__init__.py`
+- `utils/misc_utils.py`, `utils/download_utils.py`
+- `run_tinyml_modelmaker.py`
+- `common/datasets/__init__.py`
 
 ---
 
 ### 6. `21e2fca` — Replace assert/sys.exit/raise-string with proper exceptions
 
-**Portability: CONFLICT-HEAVY — Re-implement**
+✅ **DONE** — Re-implemented as `608c2d8`
 
-Touches 11 files. Upstream modified many of the same files. The specific
-`assert` statements and `sys.exit()` calls may have been restructured.
-
-**Action:** Audit `origin/main` for remaining `assert` (non-test), `sys.exit()`,
-and bare `raise "string"` patterns. Apply proper exception handling to any that
-remain.
+Replaced ~25 `assert` statements, 1 `raise "string"`, and `assert False`
+across 7 files with proper `ValueError`, `TypeError`, `FileNotFoundError`,
+and `RuntimeError` exceptions.
 
 ---
 
 ### 7. `12bdf2c` — Extract resolve_paths() into misc_utils.py
 
-**Portability: RE-IMPLEMENT**
+✅ **DONE** — Re-implemented as `23117c1`
 
-Extracted ~127 lines of path resolution from `timeseries/runner.py` and
-`vision/runner.py` into a shared `resolve_paths()` in `misc_utils.py`.
-
-Upstream still has path resolution inline in both runners, but the code has
-changed significantly (426 lines in runner.py now vs the version we refactored).
-The `train_output_path` handling and project path computation logic differs.
-
-**Action:** Re-implement the extraction against upstream's current `runner.py`.
-Compare the two runners to identify the common path-resolution logic and extract
-it into `misc_utils.py`. This is important for mmcli's `builder.py` which relies
-on `train_output_path` being handled correctly.
-
-**Note:** This is a high-priority port — the mmcli CLI depends on the path
-resolution behavior, particularly `train_output_path` for separating working
-copies from original data.
+Extracted `resolve_paths()` and `resolve_run_name()` into `misc_utils.py`.
+Updated both `timeseries/runner.py` and `vision/runner.py` to call the
+shared function. Critical for mmcli's `builder.py` `train_output_path` support.
 
 ---
 
 ### 8. `98095af` — Add Protocol definitions for component interfaces
 
-**Portability: EASY**
-
-Adds 2 new files (`protocols.py`, `test_protocols.py`) and a 1-line import in
-`__init__.py`. The protocols define interfaces (ModelRunner, Trainer, etc.) that
-document the expected API shape.
-
-**Action:** Cherry-pick directly. May need minor adjustment to the `__init__.py`
-import if upstream changed that file.
+✅ **DONE** — Cherry-picked as `b0a7fd7`
 
 ---
 
 ### 9. `0406cc8` — Extract BaseModelTraining to deduplicate training files
 
-**Portability: SUPERSEDED — Drop**
+❌ **DROPPED** — Superseded by upstream's `timeseries_base.py` (925 lines)
 
-Created `base_training.py` (419 lines) and reduced the 4 training subclass files
-by ~1,200 lines total.
-
-Upstream independently created `timeseries_base.py` (925 lines) with the same
-intent. The upstream version is more comprehensive and covers additional
-functionality. Our version is incompatible with the new upstream structure.
-
-**Action:** Drop this commit entirely. Use upstream's `timeseries_base.py`
-instead. Verify that any unique improvements from our `base_training.py` that
-aren't in upstream's version are noted and can be proposed separately.
+Our 419-line `base_training.py` is incompatible with the new upstream structure.
+Upstream's version is more comprehensive.
 
 ---
 
 ### 10. `1634334` — Remove unused TVM imports from test_onnx files
 
-**Portability: VERIFY FIRST**
-
-Small change (3 files, 3 lines each) — guards TVM imports with try/except to
-allow training without TVM installed.
-
-**Action:** Check if the 3 test_onnx files in `origin/main` still have the
-bare TVM imports. If so, cherry-pick (may apply cleanly). If upstream already
-fixed this, drop.
-
-Files:
-- `tinyml_tinyverse/references/image_classification/test_onnx.py`
-- `tinyml_tinyverse/references/timeseries_anomalydetection/test_onnx_cls.py`
-- `tinyml_tinyverse/references/timeseries_classification/test_onnx.py`
+❌ **DROPPED** — Upstream already fixed the TVM imports in 1.3.0
 
 ---
 
 ### 11. `e1b18df` — Update repo URLs from TexasInstruments to musicalplatypus
 
-**Portability: RE-APPLY**
+✅ **DONE** — Re-applied as `613dc01`
 
-URL replacements across 15 files. The file contents have changed upstream, so
-the old diff won't apply cleanly, but the intent is simple: replace all
-`github.com/TexasInstruments/tinyml-tensorlab` references with the fork URL.
-
-**Action:** Run a project-wide search-and-replace on `platypus_dev_1.3`:
-```
-grep -rn "TexasInstruments/tinyml-tensorlab" --include="*.py" --include="*.toml" \
-  --include="*.json" --include="*.yaml" --include="*.md" --include="*.sh" --include="*.ps1"
-```
-Then replace with `musicalplatypus/tinyml-tensorlab`.
+Replaced across 19 files.
 
 ---
 
 ### 12. `6236a3e` — Update git branch references from r1.2/main to platypus_dev
 
-**Portability: RE-APPLY (adapt)**
+✅ **DONE** — Re-applied as `4184224`
 
-Changed branch references in pyproject.toml, README, setup scripts. For the
-new branch, references should point to `platypus_dev_1.3` instead.
-
-**Action:** Search for `r1.3/main` or `main` branch references in install URLs
-and replace with `platypus_dev_1.3`. Files to check:
-- `README.md`
-- `tinyml-modelmaker/pyproject.toml`
-- `tinyml-modelmaker/setup_all.sh` / `setup_all.ps1`
-- `tinyml-modeloptimization/README.md`
-- `tinyml-tinyverse/pyproject.toml`
+Updated references to `platypus_dev_1.3` in 4 files.
 
 ---
 
 ### 13. `bc31bd6` — Bump sub-package versions to 1.2.0.dev0
 
-**Portability: SUPERSEDED — New version needed**
+✅ **DONE (superseded)** — New version bump to `1.3.0.dev0` as `5ff1ac9`
 
-Upstream is now at 1.3.0. Need a fresh bump to `1.3.0.dev0`.
-
-**Action:** Create a new commit that bumps all version declarations to
-`1.3.0.dev0` in:
-- `tinyml-modelmaker/pyproject.toml`
-- `tinyml-modelmaker/tinyml_modelmaker/version.py`
-- `tinyml-tinyverse/pyproject.toml`
-- `tinyml-tinyverse/tinyml_tinyverse/references/version.py`
-- `tinyml-modeloptimization/torchmodelopt/pyproject.toml`
-- `tinyml-modeloptimization/torchmodelopt/version.py`
+Bumped all 6 version files (3 pyproject.toml + 3 version.py).
 
 ---
 
 ### 14. `9f5769d` — Fix MPS compatibility: cast dtype before moving tensors to device
 
-**Portability: ALREADY APPLIED**
-
-Cherry-picked as `b3c606f` on `platypus_dev_1.3` (with one conflict resolved).
+✅ **DONE** — Cherry-picked as `b3c606f` (one conflict resolved)
 
 ---
 
-## Recommended Porting Order
+## Execution Summary
 
-### Phase 1: Quick wins (no conflicts)
-1. `dcf7ee9` — ARCHITECTURE.md (cherry-pick)
-2. `98095af` — Protocol definitions (cherry-pick)
-3. New commit: version bump to `1.3.0.dev0`
-4. New commit: URL replacement (TexasInstruments → musicalplatypus)
-5. New commit: branch references → `platypus_dev_1.3`
+### Phase 1: Quick wins ✅
+| Commit | Description | Result |
+|--------|-------------|--------|
+| `b3c606f` | MPS fix | Cherry-picked from platypus_dev |
+| `b448116` | ARCHITECTURE.md | Cherry-picked |
+| `b0a7fd7` | Protocol definitions | Cherry-picked |
+| `5ff1ac9` | Version bump 1.3.0.dev0 | New commit |
+| `613dc01` | URL replacement | New commit |
+| `4184224` | Branch references | New commit |
 
-### Phase 2: Verify and apply
-6. `1634334` — TVM imports (verify if still needed)
-7. `73fa781` — @classmethod fix (verify if still needed)
-8. `9ba1339` — print→logging (verify if still needed)
+### Phase 2: Verify and apply ✅
+| Commit | Description | Result |
+|--------|-------------|--------|
+| — | TVM imports | Dropped (fixed upstream) |
+| `e690110` | @classmethod fix | Re-applied to 5 files |
+| `ee684f8` | print→logging | Re-applied across 8 files |
 
-### Phase 3: Re-implement against new base
-9. `12bdf2c` — resolve_paths() extraction (high priority for mmcli)
-10. `75bea31` — Named constants (audit new codebase)
-11. `21e2fca` — Proper exceptions (audit new codebase)
-12. `2b2ba94` — Test suite (adapt to new API shapes)
+### Phase 3: Re-implement against new base ✅
+| Commit | Description | Result |
+|--------|-------------|--------|
+| `23117c1` | resolve_paths() extraction | Re-implemented |
+| `868ffb9` | Named constants | Re-implemented |
+| `608c2d8` | Proper exceptions | Re-implemented |
+| `5f40eaa` | Test suite | Re-implemented (47 pass, 1 skip) |
 
-### Drop
-- `0406cc8` — BaseModelTraining (superseded by upstream's `timeseries_base.py`)
-- `bc31bd6` — Version bump (superseded; need 1.3.0.dev0 instead)
+### Dropped
+| Original | Description | Reason |
+|----------|-------------|--------|
+| `0406cc8` | BaseModelTraining | Superseded by upstream `timeseries_base.py` |
+| `bc31bd6` | Version bump 1.2.0.dev0 | Superseded; bumped to 1.3.0.dev0 instead |
+| `1634334` | TVM imports | Fixed upstream |
 
-## Risk Assessment
+## Branch Status
 
-**High overlap areas** (most likely to cause merge conflicts):
-- `tinyml-modelmaker/tinyml_modelmaker/ai_modules/timeseries/runner.py`
-- `tinyml-modelmaker/tinyml_modelmaker/utils/misc_utils.py`
-- `tinyml-modelmaker/tinyml_modelmaker/ai_modules/timeseries/training/tinyml_tinyverse/*.py`
+`platypus_dev_1.3`: **13 commits** ahead of `origin/main`, pushed to remote.
 
-**Safe areas** (new files, minimal overlap):
-- Test files (`tests/`)
-- Protocol definitions (`protocols.py`)
-- Documentation (`ARCHITECTURE.md`)
+```
+5f40eaa Add pytest test suite for tinyml-modelmaker core modules
+608c2d8 Replace assert/sys.exit/raise-string with proper exceptions across tinyml-modelmaker
+868ffb9 Replace magic strings with named constants
+23117c1 Extract duplicated path resolution from ModelRunner into shared resolve_paths()
+ee684f8 Replace print() with logging module across tinyml-modelmaker
+e690110 Fix @classmethod methods using self instead of cls
+4184224 Update git branch references to platypus_dev_1.3
+613dc01 Update repo URLs from TexasInstruments to musicalplatypus fork
+5ff1ac9 Bump sub-package versions to 1.3.0.dev0 for development fork
+b0a7fd7 Add Protocol definitions for component interfaces
+b448116 Add ARCHITECTURE.md
+b3c606f Fix MPS compatibility: cast dtype before moving tensors to device
+6bda92d (origin/main) ... upstream base
+```
