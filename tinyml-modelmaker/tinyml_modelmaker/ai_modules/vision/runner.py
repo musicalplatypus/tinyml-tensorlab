@@ -39,6 +39,7 @@ import yaml
 from ... import utils
 from . import constants, datasets, descriptions
 from .params import init_params
+from tinyml_torchmodelopt.quantization import TinyMLQuantizationVersion
 
 logger = logging.getLogger(__name__)
 
