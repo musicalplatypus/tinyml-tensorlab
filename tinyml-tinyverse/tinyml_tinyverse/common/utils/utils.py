@@ -611,6 +611,8 @@ class SmoothedValue:
         self.fmt = fmt
 
     def update(self, value, n=1):
+        if isinstance(value, torch.Tensor):
+            value = value.item()
         self.deque.append(value)
         self.count += n
         self.total += value * n
@@ -682,11 +684,9 @@ class MetricLogger(object):
 
     def update(self, **kwargs):
         for k, v in kwargs.items():
-            if isinstance(v, torch.Tensor):
-                v = v.item()
-            if not isinstance(v, (float, int)):
+            if not isinstance(v, (float, int, torch.Tensor)):
                 raise TypeError(
-                    f"This method expects the value of the input arguments to be of type float or int, instead  got {type(v)}"
+                    f"This method expects the value of the input arguments to be of type float, int, or Tensor, instead  got {type(v)}"
                 )
             self.meters[k].update(v)
 
@@ -719,7 +719,8 @@ class MetricLogger(object):
         iter_time = SmoothedValue(fmt="{avg:.4f}")
         data_time = SmoothedValue(fmt="{avg:.4f}")
         space_fmt = ":" + str(len(str(len(iterable)))) + "d"
-        if torch.cuda.is_available():
+        _has_mem = torch.cuda.is_available() or (hasattr(torch.backends, 'mps') and torch.backends.mps.is_available())
+        if _has_mem:
             log_msg = self.delimiter.join(
                 [
                     header,
@@ -728,7 +729,7 @@ class MetricLogger(object):
                     "{meters}",
                     "time: {time}",
                     "data: {data}",
-                    "max mem: {memory:.0f}",
+                    "mem: {memory:.0f}",
                 ]
             )
         else:
@@ -743,7 +744,11 @@ class MetricLogger(object):
             if print_freq is not None and i % print_freq == 0:
                 eta_seconds = iter_time.global_avg * (len(iterable) - i)
                 eta_string = str(datetime.timedelta(seconds=int(eta_seconds)))
-                if torch.cuda.is_available():
+                if _has_mem:
+                    if torch.cuda.is_available():
+                        mem = torch.cuda.max_memory_allocated() / MB
+                    else:
+                        mem = torch.mps.current_allocated_memory() / MB
                     self.logger.info(
                         log_msg.format(
                             i,
@@ -752,7 +757,7 @@ class MetricLogger(object):
                             meters=str(self),
                             time=str(iter_time),
                             data=str(data_time),
-                            memory=torch.cuda.max_memory_allocated() / MB,
+                            memory=mem,
                         )
                     )
                 else:
@@ -1078,8 +1083,8 @@ def train_one_epoch_regression(model, criterion, optimizer, data_loader, device,
         transform = transform.to(device)
     for _, data, target in metric_logger.log_every(data_loader, print_freq, header):
         start_time = timeit.default_timer()
-        data = data.float().to(device)
-        target = target.float().to(device)
+        data = data.float().to(device, non_blocking=True)
+        target = target.float().to(device, non_blocking=True)
         if transform:
             data = transform(data)
 
@@ -1110,8 +1115,8 @@ def train_one_epoch_regression(model, criterion, optimizer, data_loader, device,
                 optimizer.step()
         mse = get_mse(output, target).squeeze()
         batch_size = output.shape[0]
-        metric_logger.update(loss=loss.item(), lr=optimizer.param_groups[0]["lr"])
-        metric_logger.meters['mse'].update(mse, n=batch_size)
+        metric_logger.update(loss=loss.detach(), lr=optimizer.param_groups[0]["lr"])
+        metric_logger.meters['mse'].update(mse.detach(), n=batch_size)
         metric_logger.meters['samples/s'].update(batch_size / (timeit.default_timer() - start_time))
 
     if model_ema:
@@ -1134,8 +1139,8 @@ def train_one_epoch_forecasting(model, criterion, optimizer, data_loader, device
 
     for _, data, target in metric_logger.log_every(data_loader, print_freq, header):
         start_time = timeit.default_timer()
-        data = data.float().to(device)
-        target = target.float().to(device)
+        data = data.float().to(device, non_blocking=True)
+        target = target.float().to(device, non_blocking=True)
 
         if transform:
             data = transform(data)
@@ -1163,8 +1168,8 @@ def train_one_epoch_forecasting(model, criterion, optimizer, data_loader, device
                 optimizer.step()
 
         batch_size = output.shape[0]
-        metric_logger.update(loss=loss.item(), lr=optimizer.param_groups[0]["lr"])
-        metric_logger.meters['smape'].update(smape(target.detach(), output.detach()).item(), n=batch_size)
+        metric_logger.update(loss=loss.detach(), lr=optimizer.param_groups[0]["lr"])
+        metric_logger.meters['smape'].update(smape(target.detach(), output.detach()), n=batch_size)
         metric_logger.meters['samples/s'].update(batch_size / (timeit.default_timer() - start_time))
 
     if model_ema:
@@ -1202,10 +1207,9 @@ def evaluate_forecasting(model, criterion, data_loader, device, transform=None, 
 
             # Compute loss
             loss = criterion(output, target)
-            metric_logger.update(loss=loss.item())
+            metric_logger.update(loss=loss.detach())
             batch_size = data.shape[0]
-            smape_score = smape(target.detach(), output.detach()).item()
-            metric_logger.meters['smape'].update(smape_score, n=batch_size)
+            metric_logger.meters['smape'].update(smape(target.detach(), output.detach()), n=batch_size)
             targets.append(target)
             outputs.append(output)
             
@@ -1270,14 +1274,14 @@ def evaluate_regression(model, criterion, data_loader, device, transform, log_su
                 output = model(data)
 
             loss = criterion(output, target)  # .squeeze()
-            val_loss += loss.item()
+            val_loss += loss.detach()
             mse = get_mse(output, target)  # .squeeze()
             r2 = get_r2_score(output, target)  # .squeeze()
             target_list.append(target)
             predictions_list.append(output)
             # FIXME need to take into account that the datasets could have been padded in distributed setup
             batch_size = data.shape[0]
-            metric_logger.update(loss=loss.item())
+            metric_logger.update(loss=loss.detach())
             metric_logger.meters['mse'].update(mse, n=batch_size)
             metric_logger.meters['r2'].update(r2, n=batch_size)
 
@@ -1304,7 +1308,7 @@ def train_one_epoch_anomalydetection(
         transform = transform.to(device)
     for _, data, labels in metric_logger.log_every(data_loader, print_freq, header):
         start_time = timeit.default_timer()
-        data = data.float().to(device)
+        data = data.float().to(device, non_blocking=True)
         # In anomaly detection with autoencoder, the target and the input data are the same
         target = data.clone()
 
@@ -1332,7 +1336,7 @@ def train_one_epoch_anomalydetection(
                 loss.backward()
                 optimizer.step()
 
-        metric_logger.update(loss=loss.item())
+        metric_logger.update(loss=loss.detach())
 
     if model_ema:
         model_ema.update_parameters(model)
@@ -1360,9 +1364,9 @@ def evaluate_anomalydetection(
             else:
                 output = model(data)
 
-            loss = criterion(output, target) 
+            loss = criterion(output, target)
             batch_size = data.shape[0]
-            metric_logger.update(loss=loss.item())
+            metric_logger.update(loss=loss.detach())
     metric_logger.synchronize_between_processes()
     return metric_logger.loss.global_avg
 
@@ -1385,10 +1389,10 @@ def train_one_epoch_classification(
     for data_raw, data_feat_ext, target in metric_logger.log_every(data_loader, print_freq, header):
         start_time = timeit.default_timer()
         if nn_for_feature_extraction:
-            data = data_raw.float().to(device)
+            data = data_raw.float().to(device, non_blocking=True)
         else:
-            data = data_feat_ext.float().to(device)
-        target = target.long().to(device)
+            data = data_feat_ext.float().to(device, non_blocking=True)
+        target = target.long().to(device, non_blocking=True)
 
         if transform:
             data = transform(data)
@@ -1416,8 +1420,8 @@ def train_one_epoch_classification(
 
         acc1 = accuracy(output, target, topk=(1,))
         batch_size = output.shape[0]
-        metric_logger.update(loss=loss.item(), lr=optimizer.param_groups[0]["lr"])
-        metric_logger.meters['acc1'].update(acc1[0], n=batch_size)
+        metric_logger.update(loss=loss.detach(), lr=optimizer.param_groups[0]["lr"])
+        metric_logger.meters['acc1'].update(acc1[0].detach(), n=batch_size)
         metric_logger.meters['samples/s'].update(batch_size / (timeit.default_timer() - start_time))
 
     if model_ema:
@@ -1459,8 +1463,8 @@ def evaluate_classification(model, criterion, data_loader, device, transform, lo
             acc1 = accuracy(output.squeeze(), target, topk=(1,))
 
             batch_size = data.shape[0]
-            metric_logger.update(loss=loss.item())
-            metric_logger.meters['acc1'].update(acc1[0], n=batch_size)
+            metric_logger.update(loss=loss.detach())
+            metric_logger.meters['acc1'].update(acc1[0].detach(), n=batch_size)
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
 
@@ -1715,8 +1719,8 @@ def get_trained_feature_extraction_model(model, args, data_loader, data_loader_t
         for data_raw, data_fe, _ in data_loader:
             start_time = timeit.default_timer()
 
-            data_raw = data_raw.float().to(device)
-            data_fe = data_fe.float().to(device)
+            data_raw = data_raw.float().to(device, non_blocking=True)
+            data_fe = data_fe.float().to(device, non_blocking=True)
 
             output = model(data_raw)  # (n,1,8000) -> (n,35)
 
@@ -1742,8 +1746,8 @@ def get_trained_feature_extraction_model(model, args, data_loader, data_loader_t
         with torch.no_grad():
             for data_raw, data_fe, _ in data_loader_test:
                 # Assuming the dataset returns (data, target)
-                data_raw = data_raw.float().to(device)
-                data_fe = data_fe.float().to(device)
+                data_raw = data_raw.float().to(device, non_blocking=True)
+                data_fe = data_fe.float().to(device, non_blocking=True)
                 outputs = model(data_raw)
 
                 # Calculate loss

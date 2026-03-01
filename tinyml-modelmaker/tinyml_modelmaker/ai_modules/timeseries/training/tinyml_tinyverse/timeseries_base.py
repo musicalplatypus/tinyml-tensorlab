@@ -649,12 +649,23 @@ class BaseModelTraining:
 
     def _get_device(self):
         """
-        Determine the training device based on GPU availability.
+        Determine the training device based on configuration and hardware.
+
+        Priority order:
+            1. Explicit ``training_device`` in config (mps / cuda / cpu)
+            2. Auto-detect: MPS if available, else CUDA, else CPU
 
         Returns:
             tuple: (device string, distributed flag)
         """
         distributed = 1 if self.params.training.num_gpus > 1 else 0
+
+        explicit = getattr(self.params.training, 'training_device', None)
+        if explicit and explicit not in ('auto', constants.TRAINING_DEVICE_CUDA):
+            # User explicitly chose a device — honour it.
+            return explicit, distributed
+
+        # Auto-detect
         device = 'cpu'
         if self.params.training.num_gpus > 0:
             if torch.backends.mps.is_available():
@@ -835,7 +846,12 @@ class BaseModelTraining:
         # These must be stripped before argv slicing (which uses fixed offsets
         # for trailing key-value pairs) and re-appended after.
         bool_flags = []
-        if getattr(self.params.training, 'native_amp', False):
+        # Auto-enable AMP on MPS (Apple Silicon) unless explicitly disabled.
+        # MPS benefits from bfloat16 autocast with no GradScaler needed.
+        native_amp = getattr(self.params.training, 'native_amp', None)
+        if native_amp is None and device == 'mps':
+            native_amp = True
+        if native_amp:
             bool_flags.append('--native-amp')
         argv.extend(bool_flags)
 
