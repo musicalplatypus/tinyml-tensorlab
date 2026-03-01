@@ -268,8 +268,72 @@ To begin with, you can use the repo as a `developer` or `user`.
     ```
     
 </details>
-  
-  
+
+  <details>
+    <summary> macOS (Apple Silicon)</summary>
+
+    #### Developer setup on macOS with Apple Silicon (M1/M2/M3/M4)
+
+    Training uses the MPS (Metal Performance Shaders) backend for GPU acceleration.
+    Python 3.10 is required.
+
+    ##### 1. Create a virtual environment
+
+    ```bash
+    python3.10 -m venv ~/.venv-tinyml
+    source ~/.venv-tinyml/bin/activate
+    pip install --upgrade pip setuptools wheel
+    ```
+
+    ##### 2. Install packages
+
+    ```bash
+    # From the tinyml-tensorlab root directory:
+
+    # Install modelmaker editable (pulls tinyverse & torchmodelopt from git)
+    pip install -e ./tinyml-modelmaker
+
+    # Re-install tinyverse and torchmodelopt as editable local copies.
+    # --no-deps prevents pip from re-fetching them from the git URLs
+    # in modelmaker's pyproject.toml.
+    pip install --no-deps -e ./tinyml-tinyverse
+    pip install --no-deps -e ./tinyml-modeloptimization/torchmodelopt
+    pip install --no-deps -e ./tinyml-modelzoo
+
+    # Clean up stale directories left behind by the git-based install.
+    # Without this, Python may find an incomplete copy in site-packages
+    # instead of your local editable source.
+    SITE=$(python -c "import site; print(site.getsitepackages()[0])")
+    rm -rf "$SITE/tinyml_tinyverse/" "$SITE/tinyml_torchmodelopt/"
+    ```
+
+    > **Why the extra steps?**  `tinyml-modelmaker`'s `pyproject.toml` lists
+    > `tinyml_tinyverse` and `tinyml_torchmodelopt` as git URL dependencies.
+    > A plain `pip install -e .` on modelmaker fetches those from GitHub,
+    > overwriting any editable install. The `--no-deps` re-installs above
+    > restore the editable links, and the `rm -rf` removes stale package
+    > directories that pip's uninstaller can leave behind.
+
+    ##### 3. Verify the install
+
+    ```bash
+    python -c "
+    import tinyml_modelmaker, tinyml_tinyverse
+    print('modelmaker:', tinyml_modelmaker.__file__)
+    print('tinyverse: ', tinyml_tinyverse.__file__)
+    assert 'tinyml-tensorlab' in tinyml_tinyverse.__file__, 'ERROR: tinyverse is NOT editable'
+    print('All editable installs OK')
+    "
+    ```
+
+    ##### 4. Run
+
+    ```bash
+    cd tinyml-modelzoo
+    python ../tinyml-modelmaker/run_tinyml_modelmaker.py examples/dc_arc_fault/config_dsk.yaml
+    ```
+
+    </details>
 
 * #### Keeping up to date
     
