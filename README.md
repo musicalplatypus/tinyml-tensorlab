@@ -305,6 +305,23 @@ To begin with, you can use the repo as a `developer` or `user`.
     # instead of your local editable source.
     SITE=$(python -c "import site; print(site.getsitepackages()[0])")
     rm -rf "$SITE/tinyml_tinyverse/" "$SITE/tinyml_torchmodelopt/"
+
+    # Fix Python 3.10 resource_tracker spurious "leaked semaphore" errors.
+    # On Python <=3.11, the resource_tracker uses set.remove() instead of
+    # set.discard(), causing KeyError tracebacks from loky/scikit-learn.
+    # This .pth + .py pair patches the resource_tracker in every subprocess.
+    cat > "$SITE/_fix_resource_tracker.py" << 'PYEOF'
+import sys
+if sys.version_info < (3, 12):
+    import multiprocessing.resource_tracker as _rt
+    _original_main = _rt.main
+    def _patched_main(fd):
+        _orig = sys.excepthook
+        sys.excepthook = lambda t, v, tb: None if t is KeyError else _orig(t, v, tb)
+        _original_main(fd)
+    _rt.main = _patched_main
+PYEOF
+    echo "import _fix_resource_tracker" > "$SITE/_fix_resource_tracker.pth"
     ```
 
     > **Why the extra steps?**  `tinyml-modelmaker`'s `pyproject.toml` lists
