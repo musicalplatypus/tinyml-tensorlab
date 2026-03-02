@@ -567,7 +567,7 @@ data_processing_feature_extraction:
 
 training:
     enable: True
-    model_name: 'TimeSeries_Generic_AD_17k_t'
+    model_name: 'AD_17k'
     batch_size: 64
     training_epochs: 200
     num_gpus: 0

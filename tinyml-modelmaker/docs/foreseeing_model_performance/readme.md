@@ -54,7 +54,7 @@ We will build the project and flash the program in device. The project has a 'C'
 
 Modelmaker is configured using a [CONFIG_YAML](config.yaml) file. The config file controls the data processing, feature extraction, model configuration and model selection. In this example we will experiment with different input size (frame size) and deep learning models. To keep things simple we won't use any feature extraction transforms. 
 
-In this example we will simply load dataset and pass it to the deep learning model. The focus is not to get the best accuracy but to understand the tradeoff between accuracy and model performance (cycles). We will sweep the frame size from [128, 1024] and use different TimeSeries_Generic_Models i.e. [TimeSeries_Generic_1k_t, TimeSeries_Generic_4k_t, TimeSeries_Generic_6k_t, TimeSeries_Generic_13k_t].
+In this example we will simply load dataset and pass it to the deep learning model. The focus is not to get the best accuracy but to understand the tradeoff between accuracy and model performance (cycles). We will sweep the frame size from [128, 1024] and use different generic classification models i.e. [CLS_1k_NPU, CLS_4k_NPU, CLS_6k_NPU, CLS_13k_NPU].
 
 These can be configured in yaml in the following section
 ```yaml
@@ -66,7 +66,7 @@ data_processing_feature_extraction:
 
 training:
     enable: True #False
-    model_name: 'TimeSeries_Generic_1k_t'    # Select the model
+    model_name: 'CLS_1k_NPU'    # Select the model
     
 ```
 
@@ -77,7 +77,7 @@ To run the modelmaker, go to tinyml-modelmaker folder. Open terminal and run the
 ```sh
 run_tinyml_modelmaker.sh docs/foreseeing_model_performance/config.yaml
 ```
-This will run the default selected configuration of frame_size 128 and model TimeSeries_Generic_1k_t. To get a model with different input size (say 256), we will change the frame size to 256 and run the modelmaker with the same command as above.
+This will run the default selected configuration of frame_size 128 and model CLS_1k_NPU. To get a model with different input size (say 256), we will change the frame size to 256 and run the modelmaker with the same command as above.
 
 You can see the output from running modelmaker in the following folder **tinyml-modelmaker/data/projects/model_performance/run/model_performance**.
 Follow the below steps to deploy compiled model to CCS project and measure the cycles by running the application on device.
@@ -111,10 +111,10 @@ Verify the results from the table below. The input size is (NCHW) -> (1,1,frame 
 
 | Cycles Consumed (Accuracy) |         128        |         256         |         512       |         1024        |
 |----------------------------|--------------------|---------------------|-------------------|---------------------|
-| Timeseries_Generic_1k_t    |   103882 (80.32%)  |   188397 (85.83%)   |  372242 (87.33%)  |    692220 (94.43%)  |
-| Timeseries_Generic_4k_t    |    71595 (86.45%)  |   109534 (89.29%)   |  184981 (91.79%)  |    326782 (94.85%)  |
-| Timeseries_Generic_6k_t    |   107982 (89.97%)  |   164676 (90.05%)   |  261792 (92.62%)  |    462680 (95.68%)  |
-| Timeseries_Generic_13k_t   |   199691 (91.83%)  |   312406 (92.60%)   |  535437 (93.21%)  |    985529 (95.54%)  |
+| CLS_1k_NPU                 |   103882 (80.32%)  |   188397 (85.83%)   |  372242 (87.33%)  |    692220 (94.43%)  |
+| CLS_4k_NPU                 |    71595 (86.45%)  |   109534 (89.29%)   |  184981 (91.79%)  |    326782 (94.85%)  |
+| CLS_6k_NPU                 |   107982 (89.97%)  |   164676 (90.05%)   |  261792 (92.62%)  |    462680 (95.68%)  |
+| CLS_13k_NPU                |   199691 (91.83%)  |   312406 (92.60%)   |  535437 (93.21%)  |    985529 (95.54%)  |
 
 <hr>
 Update history:

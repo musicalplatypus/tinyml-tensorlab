@@ -9,19 +9,19 @@
 ```yaml
 training:
     enable: True
-    model_name: 'TimeSeries_Generic_13k_t'
+    model_name: 'CLS_13k_NPU'
     model_config: '/home/a/b/tinyml-modelmaker/misc/TimeSeries_Generic_x_t.yaml'
 ```
 
 * The contents of the yaml file needs to have the parameters that the model accepts as an input argument
-* For example, the class definition of CNN_TS_GEN_BASE_13K (which is referred to by TimeSeries_Generic_13k_t) contains the following input arguments:
+* For example, the class definition of CNN_TS_GEN_BASE_13K (which is referred to by CLS_13k_NPU) contains the following input arguments:
   * input_features, variables, num_classes
 ```python
 class CNN_TS_GEN_BASE_13K(GenericModelWithSpec):
     def __init__(self, config, input_features=512, variables=1, num_classes=2):
 ```
 
-* So we can have (none or upto) the following arguments in `/home/a/b/tinyml-modelmaker/misc/TimeSeries_Generic_13k_t.yaml`
+* So we can have (none or upto) the following arguments in `/home/a/b/tinyml-modelmaker/misc/CLS_13k_NPU.yaml`
 ```yaml
 input_features: 512
 variables: 2

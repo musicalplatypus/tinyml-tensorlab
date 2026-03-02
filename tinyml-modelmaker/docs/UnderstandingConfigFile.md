@@ -43,7 +43,7 @@ data_processing_feature_extraction:
 ```python
 training:  
     enable: True                            # Enable/disable training
-    model_name: 'TimeSeries_Generic_13k_t'  # Check config_timeseries*.yaml files for more models
+    model_name: 'CLS_13k_NPU'  # Check config_timeseries*.yaml files for more models
                                             # Extra models for devices other than F28P55: ArcFault_cnn_largest/ArcFault_cnn_200/ArcFault_cnn_300, ArcFault_cnn_700, MotorFault_base1, MotorFault_base2
     model_config: ''                        # Method to tweak the parameters of the chosen model. See ../scripts/tcresnet.yaml
     batch_size: 16384                       # Batch size to train

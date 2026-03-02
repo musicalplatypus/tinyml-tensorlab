@@ -18,7 +18,7 @@ data_processing_feature_extraction:
 training:
     # enable/disable training
     enable: True
-    model_name: 'TimeSeries_Generic_6k_t'
+    model_name: 'CLS_6k_NPU'
     model_config: ''
     batch_size: 256
     training_epochs: 5

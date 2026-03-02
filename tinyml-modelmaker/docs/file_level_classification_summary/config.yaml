@@ -36,9 +36,9 @@ data_processing_feature_extraction: # One or more can be cascaded in the list
 training:
     # enable/disable training
     enable: True #False
-    # F28x generic timeseries model names: TimeSeries_Generic_1k_t, TimeSeries_Generic_4k_t, TimeSeries_Generic_6k_t, TimeSeries_Generic_13k_t
+    # F28x generic timeseries model names: CLS_1k_NPU, CLS_4k_NPU, CLS_6k_NPU, CLS_13k_NPU
     # GUI only model names: MotorFault_model_1_t, MotorFault_model_2_t, MotorFault_model_3_t
-    model_name: 'TimeSeries_Generic_4k_t'
+    model_name: 'CLS_4k_NPU'
 #    model_spec: '../tinyml-mlbackend/proprietary_models/cnn_mf_1l.py'
     model_config: ''
     batch_size: 256

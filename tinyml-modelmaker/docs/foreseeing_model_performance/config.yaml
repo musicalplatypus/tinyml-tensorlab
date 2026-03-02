@@ -21,7 +21,7 @@ testing:
   enable: true
 training:
   enable: true
-  model_name: TimeSeries_Generic_1k_t
+  model_name: CLS_1k_NPU
   batch_size: 256
   model_config: ''
   num_gpus: 0

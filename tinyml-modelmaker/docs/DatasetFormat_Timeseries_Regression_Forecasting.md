@@ -95,7 +95,7 @@ data_processing_feature_extraction:
   stride_size: 0.25                       # Overlap between windows (0.0 - 1.0)
 
 training:
-  model_name: TimeSeries_Generic_1k_t     # Regression model from ModelZoo
+  model_name: REGR_1k     # Regression model from ModelZoo
   epochs: 100
   batch_size: 32
 ```
@@ -215,7 +215,7 @@ data_processing_feature_extraction:
   # target_variables: ['pm']
 
 training:
-  model_name: TimeSeries_Generic_Forecasting_LSTM8
+  model_name: FCST_LSTM8
   epochs: 100
   batch_size: 32
   output_int: False                       # MUST be False for forecasting
@@ -441,7 +441,7 @@ data_processing_feature_extraction:
   frame_size: 128            # Use 128 timesteps per prediction
   stride_size: 0.25
 training:
-  model_name: TimeSeries_Generic_1k_t
+  model_name: REGR_1k
 ```
 
 **Results:**
@@ -486,7 +486,7 @@ data_processing_feature_extraction:
   forecast_horizon: 1         # Predict 1 timestep ahead
   stride_size: 0.4
 training:
-  model_name: TimeSeries_Generic_Forecasting_LSTM8
+  model_name: FCST_LSTM8
   output_int: False           # MUST be False for forecasting
 ```
 
@@ -533,7 +533,7 @@ data_processing_feature_extraction:
   frame_size: 5                            # Use 5 past timesteps
   forecast_horizon: 3                      # Predict 3 timesteps ahead
 training:
-  model_name: TimeSeries_Generic_Forecasting_LSTM8
+  model_name: FCST_LSTM8
 ```
 
 **Use case**: Energy-efficient HVAC control, building automation
