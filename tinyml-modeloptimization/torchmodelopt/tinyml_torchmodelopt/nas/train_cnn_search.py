@@ -150,8 +150,8 @@ def train(args, epoch, train_loader, valid_loader, model, architect, criterion, 
         n = input.size(0)  # Batch size
 
         # Move input and target to device and set types
-        input = Variable(input, requires_grad=False).to(device).float()
-        target = Variable(target, requires_grad=False).to(device).long()
+        input = Variable(input.float(), requires_grad=False).to(device)
+        target = Variable(target.long(), requires_grad=False).to(device)
 
         # Get a batch from the validation set for architecture step,
         # cycling back to the start when the validation set is exhausted.
@@ -160,8 +160,8 @@ def train(args, epoch, train_loader, valid_loader, model, architect, criterion, 
         except StopIteration:
             valid_iter = iter(valid_loader)
             input_raw, input_search, target_search = next(valid_iter)
-        input_search = Variable(input_search, requires_grad=False).to(device).float()
-        target_search = Variable(target_search, requires_grad=False).to(device).long()
+        input_search = Variable(input_search.float(), requires_grad=False).to(device)
+        target_search = Variable(target_search.long(), requires_grad=False).to(device)
         
         # Update architecture parameters (unrolled or standard)
         architect.step(
@@ -217,8 +217,8 @@ def infer(args, epoch, valid_loader, model, criterion):
 
     for step, (input_raw, input, target) in enumerate(valid_loader):
         with torch.no_grad():
-            input = input.to(device).float()   # Move input to device
-            target = target.to(device).long()  # Move target to device
+            input = input.float().to(device)   # Cast then move to device
+            target = target.long().to(device)  # Cast then move to device
 
         logits = model(input)              # Forward pass
         loss = criterion(logits, target)   # Compute loss
