@@ -698,6 +698,15 @@ def get_live_capture_example_descriptions(params):
                 'pkgId': 'MSPM0-SDK',
                 'targetCfg': 'targetConfigs/MSPM0G5187.ccxml',
                 'transport': {'baudRate': 115200}
+            },
+            'MSPM0G3507': {
+                'ccsProj': 'timeseries_data_capture_LP_MSPM0G3507_nortos_ticlang',
+                'deviceName': 'MSPM0G3507',
+                'files': [],
+                'from': 'examples/nortos/LP_MSPM0G3507/edgeAI/timeseries_data_capture/ticlang/timeseries_data_capture_LP_MSPM0G3507_nortos_ticlang.projectspec',
+                'pkgId': 'MSPM0-SDK',
+                'targetCfg': 'targetConfigs/MSPM0G3507.ccxml',
+                'transport': {'baudRate': 115200}
             }
         },
         'ecg_classification': {
@@ -708,6 +717,24 @@ def get_live_capture_example_descriptions(params):
                 'from': 'examples/nortos/LP_MSPM0G5187/edgeAI/ecg_anomaly_detection_data_capture/ticlang/ecg_anomaly_detection_data_capture_LP_MSPM0G5187_nortos_ticlang.projectspec',
                 'pkgId': 'MSPM0-SDK',
                 'targetCfg': 'targetConfigs/MSPM0G5187.ccxml',
+                'transport': {'baudRate': 115200}
+            },
+            'MSPM0G3507': {
+                'ccsProj': 'ecg_anomaly_detection_data_capture_LP_MSPM0G3507_nortos_ticlang',
+                'deviceName': 'MSPM0G3507',
+                'files': [],
+                'from': 'examples/nortos/LP_MSPM0G3507/edgeAI/ecg_anomaly_detection_data_capture/ticlang/ecg_anomaly_detection_data_capture_LP_MSPM0G3507_nortos_ticlang.projectspec',
+                'pkgId': 'MSPM0-SDK',
+                'targetCfg': 'targetConfigs/MSPM0G3507.ccxml',
+                'transport': {'baudRate': 115200}
+            },
+            'MSPM0G3519': {
+                'ccsProj': 'ecg_anomaly_detection_data_capture_LP_MSPM0G3519_nortos_ticlang',
+                'deviceName': 'MSPM0G3519',
+                'files': [],
+                'from': 'examples/nortos/LP_MSPM0G3519/edgeAI/ecg_anomaly_detection_data_capture/ticlang/ecg_anomaly_detection_data_capture_LP_MSPM0G3519_nortos_ticlang.projectspec',
+                'pkgId': 'MSPM0-SDK',
+                'targetCfg': 'targetConfigs/MSPM0G3519.ccxml',
                 'transport': {'baudRate': 115200}
             }
         },
@@ -729,7 +756,25 @@ def get_live_capture_example_descriptions(params):
                 'pkgId': 'MSPM0-SDK',
                 'targetCfg': 'targetConfigs/MSPM0G5187.ccxml',
                 'transport': {'baudRate': 115200}
-            }
+            },
+            'MSPM0G3507': {
+                'ccsProj': 'motor_fault_data_capture_LP_MSPM0G3507_nortos_ticlang',
+                'deviceName': 'MSPM0G3507',
+                'files': [],
+                'from': 'examples/nortos/LP_MSPM0G3507/edgeAI/motor_fault_data_capture/ticlang/motor_fault_data_capture_LP_MSPM0G3507_nortos_ticlang.projectspec',
+                'pkgId': 'MSPM0-SDK',
+                'targetCfg': 'targetConfigs/MSPM0G3507.ccxml',
+                'transport': {'baudRate': 115200}
+            },
+            'MSPM0G3519': {
+                'ccsProj': 'motor_fault_data_capture_LP_MSPM0G3519_nortos_ticlang',
+                'deviceName': 'MSPM0G3519',
+                'files': [],
+                'from': 'examples/nortos/LP_MSPM0G3519/edgeAI/motor_fault_data_capture/ticlang/motor_fault_data_capture_LP_MSPM0G3519_nortos_ticlang.projectspec',
+                'pkgId': 'MSPM0-SDK',
+                'targetCfg': 'targetConfigs/MSPM0G3519.ccxml',
+                'transport': {'baudRate': 115200}
+            },
         },
         'pir_detection': {
             'CC2755': {
@@ -743,18 +788,18 @@ def get_live_capture_example_descriptions(params):
             },
             'CC1352': {
                 'ccsProj': 'edgeai_smart_pir_detection_cc1352_CC1352R1_LAUNCHXL_freertos_ticlang',
-                'deviceName': 'CC1352R1F3',
+                'deviceName': 'CC1352R1',
                 'files': [],
-                'from': 'examples/rtos/CC1352R1_LAUNCHXL/edgeai/edgeai_smart_pir_detection/freertos/ticlang/edgeai_smart_pir_detection_cc1352_CC1352R1_LAUNCHXL_freertos_ticlang.projectspec',
+                'from': 'examples/rtos/CC1352R1_LAUNCHXL/edgeai/edgeai_smart_pir_detection_cc1352/freertos/ticlang/edgeai_smart_pir_detection_cc1352_CC1352R1_LAUNCHXL_freertos_ticlang.projectspec',
                 'pkgId': 'SIMPLELINK-SDK-EDGEAI-PLUGIN',
                 'targetCfg': 'targetConfigs/CC1352R1F3.ccxml',
                 'transport': {'baudRate': 115200}
             },
             'CC1354': {
-                'ccsProj': 'edgeai_smart_pir_detection_LP_EM_CC1354P10_freertos_ticlang',
+                'ccsProj': 'edgeai_smart_pir_detection_cc1354p10_LP_EM_CC1354P10_1_freertos_ticlang',
                 'deviceName': 'CC1354P10',
                 'files': [],
-                'from': 'examples/rtos/LP_EM_CC1354P10/edgeai/edgeai_smart_pir_detection/freertos/ticlang/edgeai_smart_pir_detection_LP_EM_CC1354P10_freertos_ticlang.projectspec',
+                'from': 'examples/rtos/LP_EM_CC1354P10_1/edgeai/edgeai_smart_pir_detection_cc1354p10/freertos/ticlang/edgeai_smart_pir_detection_cc1354p10_LP_EM_CC1354P10_1_freertos_ticlang.projectspec',
                 'pkgId': 'SIMPLELINK-SDK-EDGEAI-PLUGIN',
                 'targetCfg': 'targetConfigs/CC1354P10.ccxml',
                 'transport': {'baudRate': 115200}
@@ -764,11 +809,11 @@ def get_live_capture_example_descriptions(params):
                 'deviceName': 'CC3551E',
                 'files': [],
                 'from': 'examples/rtos/LP_EM_CC35X1/edgeai/edgeai_smart_pir_detection/freertos/ticlang/edgeai_smart_pir_detection_LP_EM_CC35X1_freertos_ticlang.projectspec',
-                'pkgId': 'SIMPLELINK-WIFI-SDK',
-                'targetCfg': 'targetConfigs/CC3551E.ccxml',
+                'pkgId': 'SIMPLELINK-SDK-EDGEAI-PLUGIN',
+                'targetCfg': 'targetConfigs/CC35X1E.ccxml',
                 'transport': {'baudRate': 115200}
             },
-               'MSPM0G5187': {
+            'MSPM0G5187': {
                 'ccsProj': 'pir_detection_data_capture_LP_MSPM0G5187_nortos_ticlang',
                 'deviceName': 'MSPM0G5187',
                 'files': [],
@@ -776,7 +821,25 @@ def get_live_capture_example_descriptions(params):
                 'pkgId': 'MSPM0-SDK',
                 'targetCfg': 'targetConfigs/MSPM0G5187.ccxml',
                 'transport': {'baudRate': 115200}
-            }
+            },
+            'MSPM0G3507': {
+                'ccsProj': 'pir_detection_data_capture_LP_MSPM0G3507_nortos_ticlang',
+                'deviceName': 'MSPM0G3507',
+                'files': [],
+                'from': 'examples/nortos/LP_MSPM0G3507/edgeAI/pir_detection_data_capture/ticlang/pir_detection_data_capture_LP_MSPM0G3507_nortos_ticlang.projectspec',
+                'pkgId': 'MSPM0-SDK',
+                'targetCfg': 'targetConfigs/MSPM0G3507.ccxml',
+                'transport': {'baudRate': 115200}
+            },
+            'MSPM0G3519': {
+                'ccsProj': 'pir_detection_data_capture_LP_MSPM0G3519_nortos_ticlang',
+                'deviceName': 'MSPM0G3519',
+                'files': [],
+                'from': 'examples/nortos/LP_MSPM0G3519/edgeAI/pir_detection_data_capture/ticlang/pir_detection_data_capture_LP_MSPM0G3519_nortos_ticlang.projectspec',
+                'pkgId': 'MSPM0-SDK',
+                'targetCfg': 'targetConfigs/MSPM0G3519.ccxml',
+                'transport': {'baudRate': 115200}
+            },
         }
         
     }
@@ -857,7 +920,7 @@ def get_live_preview_example_descriptions(params):
                 'from': 'examples/nortos/LP_MSPM0G5187/edgeAI/ac_arc_fault_detection_live_preview/ticlang/ac_arc_fault_detection_live_preview_LP_MSPM0G5187_nortos_ticlang.projectspec',
                 'pkgId': 'MSPM0-SDK',
                 'targetCfg': 'targetConfigs/MSPM0G5187.ccxml',
-                'transport': {'baudRate': 115200}
+                'transport': {'baudRate': 5820000}
             }
         },
         'generic_timeseries_classification': {
@@ -925,18 +988,18 @@ def get_live_preview_example_descriptions(params):
             },
             'CC1352': {
                 'ccsProj': 'edgeai_smart_pir_detection_cc1352_CC1352R1_LAUNCHXL_freertos_ticlang',
-                'deviceName': 'CC1352R1F3',
+                'deviceName': 'CC1352R1',
                 'files': [{'from': 'artifacts/', 'to': 'ai_artifacts/'}],
-                'from': 'examples/rtos/CC1352R1_LAUNCHXL/edgeai/edgeai_smart_pir_detection/freertos/ticlang/edgeai_smart_pir_detection_cc1352_CC1352R1_LAUNCHXL_freertos_ticlang.projectspec',
+                'from': 'examples/rtos/CC1352R1_LAUNCHXL/edgeai/edgeai_smart_pir_detection_cc1352/freertos/ticlang/edgeai_smart_pir_detection_cc1352_CC1352R1_LAUNCHXL_freertos_ticlang.projectspec',
                 'pkgId': 'SIMPLELINK-SDK-EDGEAI-PLUGIN',
                 'targetCfg': 'targetConfigs/CC1352R1F3.ccxml',
                 'transport': {'baudRate': 115200}
             },
             'CC1354': {
-                'ccsProj': 'edgeai_smart_pir_detection_LP_EM_CC1354P10_freertos_ticlang',
+                'ccsProj': 'edgeai_smart_pir_detection_cc1354p10_LP_EM_CC1354P10_1_freertos_ticlang',
                 'deviceName': 'CC1354P10',
                 'files': [{'from': 'artifacts/', 'to': 'ai_artifacts/'}],
-                'from': 'examples/rtos/LP_EM_CC1354P10/edgeai/edgeai_smart_pir_detection/freertos/ticlang/edgeai_smart_pir_detection_LP_EM_CC1354P10_freertos_ticlang.projectspec',
+                'from': 'examples/rtos/LP_EM_CC1354P10_1/edgeai/edgeai_smart_pir_detection_cc1354p10/freertos/ticlang/edgeai_smart_pir_detection_cc1354p10_LP_EM_CC1354P10_1_freertos_ticlang.projectspec',
                 'pkgId': 'SIMPLELINK-SDK-EDGEAI-PLUGIN',
                 'targetCfg': 'targetConfigs/CC1354P10.ccxml',
                 'transport': {'baudRate': 115200}
@@ -946,8 +1009,8 @@ def get_live_preview_example_descriptions(params):
                 'deviceName': 'CC3551E',
                 'files': [{'from': 'artifacts/', 'to': 'ai_artifacts/'}],
                 'from': 'examples/rtos/LP_EM_CC35X1/edgeai/edgeai_smart_pir_detection/freertos/ticlang/edgeai_smart_pir_detection_LP_EM_CC35X1_freertos_ticlang.projectspec',
-                'pkgId': 'SIMPLELINK-WIFI-SDK',
-                'targetCfg': 'targetConfigs/CC3551E.ccxml',
+                'pkgId': 'SIMPLELINK-SDK-EDGEAI-PLUGIN',
+                'targetCfg': 'targetConfigs/CC35X1E.ccxml',
                 'transport': {'baudRate': 115200}
             },
             'MSPM0G5187': {
