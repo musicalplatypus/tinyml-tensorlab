@@ -161,7 +161,7 @@ Check model name spelling. List available models:
 
 .. code-block:: bash
 
-   python -c "from tinyml_tinyverse.common.models import MODEL_REGISTRY; print(list(MODEL_REGISTRY.keys()))"
+   python -c "from tinyml_modelzoo.models import list_models; print(list_models())"
 
 **Feature Extraction Preset Not Found**
 
@@ -412,7 +412,7 @@ Check device name spelling. Valid names:
 * F2837, F28004, F28003, F280013, F280015
 * MSPM0G3507, MSPM0G3519, MSPM0G5187
 * AM263, AM263P, AM261, AM13E2
-* CC2755, CC1352
+* CC2755, CC1352, CC1354, CC35X1
 
 Getting Help
 ------------

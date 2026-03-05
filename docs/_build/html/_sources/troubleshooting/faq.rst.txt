@@ -19,9 +19,10 @@ Over 20 TI microcontrollers across multiple families:
 
 * C2000 (F28P55, F28P65, F2837, etc.)
 * MSPM0 (MSPM0G3507, MSPM0G3519, MSPM0G5187)
-* MSPM33C (MSPM33C32, MSPM33C34, AM13E2)
+* MSPM33C (MSPM33C32, MSPM33C34)
+* AM13 (AM13E2)
 * AM26x (AM263, AM263P, AM261)
-* Connectivity (CC2755, CC1352)
+* Connectivity (CC2755, CC1352, CC1354, CC35X1)
 
 See :doc:`/devices/device_overview` for the complete list.
 
@@ -30,7 +31,7 @@ See :doc:`/devices/device_overview` for the complete list.
 Three devices include the TINPU neural accelerator:
 
 * F28P55 (C2000 family)
-* AM13E2 (MSPM33C family)
+* AM13E2 (AM13 family)
 * MSPM0G5187 (MSPM0 family)
 
 **Is GPU required for training?**
@@ -228,8 +229,8 @@ for your specific task and constraints.
 
 **Can I customize the training pipeline?**
 
-Yes, TinyVerse provides the training infrastructure.
-See the TinyVerse documentation for customization options.
+Yes, you can add custom models to ``tinyml-modelzoo``.
+See :doc:`/byom/adding_models` for step-by-step instructions.
 
 **Is there an API for integration?**
 

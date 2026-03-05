@@ -285,17 +285,17 @@ TARGET_SDK_RELEASE_MSPM0 = '2_08_00_03'
 TARGET_SDK_VERSION_MSPM33C = "1.02.00.00"
 TARGET_SDK_RELEASE_MSPM33C = '1_02_00_00'
 
-TARGET_SDK_VERSION_CC2755 = '9.12.00.00'
-TARGET_SDK_RELEASE_CC2755 = '09_12_00_00'
+TARGET_SDK_VERSION_CC2755 = '1.00.00.00'
+TARGET_SDK_RELEASE_CC2755 = '01_00_00_00'
 
-TARGET_SDK_VERSION_CC1352 = '8.31.00.11'
-TARGET_SDK_RELEASE_CC1352 = '08_31_00_11'
+TARGET_SDK_VERSION_CC1352 = '1.00.00.00'
+TARGET_SDK_RELEASE_CC1352 = '01_00_00_00'
 
-TARGET_SDK_VERSION_CC1354 = '8.31.00.11'
-TARGET_SDK_RELEASE_CC1354 = '08_31_00_11'
+TARGET_SDK_VERSION_CC1354 = '1.00.00.00'
+TARGET_SDK_RELEASE_CC1354 = '01_00_00_00'
 
-TARGET_SDK_VERSION_CC35X1 = '9.21.00.15'
-TARGET_SDK_RELEASE_CC35X1 = '09_21_00_15'
+TARGET_SDK_VERSION_CC35X1 = '1.00.00.00'
+TARGET_SDK_RELEASE_CC35X1 = '01_00_00_00'
 
 
 TINYML_TARGET_DEVICE_ADDITIONAL_INFORMATION = '\n * Tiny ML model development information: https://github.com/musicalplatypus/tinyml-tensorlab \n'
@@ -623,7 +623,8 @@ Additional information:
 TARGET_DEVICE_SETUP_INSTRUCTIONS_CC2755 = \
     f'''* Product information: https://www.ti.com/product/CC2755R10
 * Launchpad: https://www.ti.com/tool/LP-EM-CC2745R10-Q1
-* CC2755 SDK: https://www.ti.com/tool/download/SIMPLELINK-SDK-EDGEAI-PLUGIN/9.12.00.00
+* Plugin SDK: https://www.ti.com/tool/download/SIMPLELINK-SDK-EDGEAI-PLUGIN
+* CC2755 SDK: https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F3-SDK/9.12.00.19
 * SDK release: {TARGET_SDK_RELEASE_CC2755}'''
 
 TARGET_DEVICE_DETAILS_CC2755= \
@@ -640,7 +641,8 @@ Additional information:
 TARGET_DEVICE_SETUP_INSTRUCTIONS_CC1352 = \
     f'''* Product information: https://www.ti.com/product/CC1352R
 * Launchpad: https://www.ti.com/tool/LAUNCHXL-CC1352R1
-* CC1352 SDK: https://www.ti.com/tool/SIMPLELINK-CC13XX-CC26XX-SDK
+* Plugin SDK: https://www.ti.com/tool/download/SIMPLELINK-SDK-EDGEAI-PLUGIN
+* CC1352 SDK: https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F2-SDK/8.31.00.11
 * SDK release: {TARGET_SDK_RELEASE_CC1352}'''
 
 TARGET_DEVICE_DETAILS_CC1352 = \
@@ -657,7 +659,8 @@ Additional information:
 TARGET_DEVICE_SETUP_INSTRUCTIONS_CC1354 = \
     f'''* Product information: https://www.ti.com/product/CC1354P10
 * Launchpad: https://www.ti.com/tool/LP-EM-CC1354P10
-* CC1354 SDK: https://www.ti.com/tool/SIMPLELINK-CC13XX-CC26XX-SDK
+* Plugin SDK: https://www.ti.com/tool/download/SIMPLELINK-SDK-EDGEAI-PLUGIN
+* CC1354 SDK: https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F2-SDK/8.31.00.11
 * SDK release: {TARGET_SDK_RELEASE_CC1354}'''
 
 TARGET_DEVICE_DETAILS_CC1354 = \
@@ -674,7 +677,8 @@ Additional information:
 TARGET_DEVICE_SETUP_INSTRUCTIONS_CC35X1 = \
     f'''* Product information: https://www.ti.com/product/CC3551E
 * Launchpad: https://www.ti.com/tool/LP-EM-CC35X1
-* CC35X1 SDK: https://www.ti.com/tool/SIMPLELINK-WIFI-SDK
+* Plugin SDK: https://www.ti.com/tool/download/SIMPLELINK-SDK-EDGEAI-PLUGIN
+* CC35X1 SDK: https://www.ti.com/tool/download/SIMPLELINK-WIFI-SDK/9.21.00.15
 * SDK release: {TARGET_SDK_RELEASE_CC35X1}'''
 
 TARGET_DEVICE_DETAILS_CC35X1 = \
@@ -693,7 +697,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_F280013: {
         'device_name': TARGET_DEVICE_F280013,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 0,
+        'device_selection_factor': 7,
         'device_details': TARGET_DEVICE_DETAILS_F280013,
         'sdk_version': TARGET_SDK_VERSION_C2000,
         'sdk_release': TARGET_SDK_RELEASE_C2000,
@@ -701,7 +705,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_F280015: {
         'device_name': TARGET_DEVICE_F280015,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 1,
+        'device_selection_factor': 8,
         'device_details': TARGET_DEVICE_DETAILS_F280015,
         'sdk_version': TARGET_SDK_VERSION_C2000,
         'sdk_release': TARGET_SDK_RELEASE_C2000,
@@ -709,7 +713,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_F28003: {
         'device_name': TARGET_DEVICE_F28003,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 2,
+        'device_selection_factor': 6,
         'device_details': TARGET_DEVICE_DETAILS_F28003,
         'sdk_version': TARGET_SDK_VERSION_C2000,
         'sdk_release': TARGET_SDK_RELEASE_C2000,
@@ -717,7 +721,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_F28004: {
         'device_name': TARGET_DEVICE_F28004,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 3,
+        'device_selection_factor': 5,
         'device_details': TARGET_DEVICE_DETAILS_F28004,
         'sdk_version': TARGET_SDK_VERSION_C2000,
         'sdk_release': TARGET_SDK_RELEASE_C2000,
@@ -725,7 +729,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_F2837: {
         'device_name': TARGET_DEVICE_F2837,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 4,
+        'device_selection_factor': 11,
         'device_details': TARGET_DEVICE_DETAILS_F2837,
         'sdk_version': TARGET_SDK_VERSION_C2000,
         'sdk_release': TARGET_SDK_RELEASE_C2000,
@@ -733,7 +737,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_F28P65: {
         'device_name': TARGET_DEVICE_F28P65,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 5,
+        'device_selection_factor': 12,
         'device_details': TARGET_DEVICE_DETAILS_F28P65,
         'sdk_version': TARGET_SDK_VERSION_C2000,
         'sdk_release': TARGET_SDK_RELEASE_C2000,
@@ -741,7 +745,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_F28P55: {
         'device_name': TARGET_DEVICE_F28P55,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 6,
+        'device_selection_factor': 14,
         'device_details': TARGET_DEVICE_DETAILS_F28P55,
         'sdk_version': TARGET_SDK_VERSION_C2000,
         'sdk_release': TARGET_SDK_RELEASE_C2000,
@@ -749,7 +753,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_AM263: {
         'device_name': TARGET_DEVICE_AM263,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 7,
+        'device_selection_factor': 16,
         'device_details': TARGET_DEVICE_DETAILS_AM263,
         'sdk_version': TARGET_SDK_VERSION_C2000,
         'sdk_release': TARGET_SDK_RELEASE_C2000,
@@ -757,7 +761,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_AM263P: {
         'device_name': TARGET_DEVICE_AM263P,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 7,
+        'device_selection_factor': 17,
         'device_details': TARGET_DEVICE_DETAILS_AM263P,
         'sdk_version': TARGET_SDK_VERSION_C2000,
         'sdk_release': TARGET_SDK_RELEASE_C2000,
@@ -765,7 +769,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_AM261: {
         'device_name': TARGET_DEVICE_AM261,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 7,
+        'device_selection_factor': 15,
         'device_details': TARGET_DEVICE_DETAILS_AM261,
         'sdk_version': TARGET_SDK_VERSION_C2000,
         'sdk_release': TARGET_SDK_RELEASE_C2000,
@@ -773,7 +777,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_F29H85: {
         'device_name': TARGET_DEVICE_F29H85,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 8,
+        'device_selection_factor': 22,
         'device_details': TARGET_DEVICE_DETAILS_F29H85,
         'sdk_version': TARGET_SDK_VERSION_F29H85,
         'sdk_release': TARGET_SDK_RELEASE_F29H85,
@@ -781,7 +785,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_F29P58: {
         'device_name': TARGET_DEVICE_F29P58,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 9,
+        'device_selection_factor': 21,
         'device_details': TARGET_DEVICE_DETAILS_F29P58,
         'sdk_version': TARGET_SDK_VERSION_F29P58,
         'sdk_release': TARGET_SDK_RELEASE_F29P58,
@@ -789,7 +793,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_F29P32: {
         'device_name': TARGET_DEVICE_F29P32,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 10,
+        'device_selection_factor': 20,
         'device_details': TARGET_DEVICE_DETAILS_F29P32,
         'sdk_version': TARGET_SDK_VERSION_F29P32,
         'sdk_release': TARGET_SDK_RELEASE_F29P32,
@@ -797,7 +801,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_MSPM0G3507: {
         'device_name': TARGET_DEVICE_MSPM0G3507,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 11,
+        'device_selection_factor': 0,
         'device_details': TARGET_DEVICE_DETAILS_MSPM0G3507,
         'sdk_version': TARGET_SDK_VERSION_MSPM0,
         'sdk_release': TARGET_SDK_RELEASE_MSPM0,
@@ -805,7 +809,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_MSPM0G3519: {
         'device_name': TARGET_DEVICE_MSPM0G3519,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 12,
+        'device_selection_factor': 1,
         'device_details': TARGET_DEVICE_DETAILS_MSPM0G3519,
         'sdk_version': TARGET_SDK_VERSION_MSPM0,
         'sdk_release': TARGET_SDK_RELEASE_MSPM0,
@@ -821,7 +825,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_MSPM33C32: {
         'device_name': TARGET_DEVICE_MSPM33C32,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 14,
+        'device_selection_factor': 9,
         'device_details': TARGET_DEVICE_DETAILS_MSPM33C32,
         'sdk_version': TARGET_SDK_VERSION_MSPM33C,
         'sdk_release': TARGET_SDK_RELEASE_MSPM33C,
@@ -829,7 +833,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_MSPM33C34: {
         'device_name': TARGET_DEVICE_MSPM33C34,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 15,
+        'device_selection_factor': 19,
         'device_details': TARGET_DEVICE_DETAILS_MSPM33C34,
         'sdk_version': TARGET_SDK_VERSION_MSPM33C,
         'sdk_release': TARGET_SDK_RELEASE_MSPM33C,
@@ -837,7 +841,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_AM13E2: {
         'device_name': TARGET_DEVICE_AM13E2,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 16,
+        'device_selection_factor': 18,
         'device_details': TARGET_DEVICE_DETAILS_AM13E2,
         'sdk_version': TARGET_SDK_VERSION_MSPM33C,
         'sdk_release': TARGET_SDK_RELEASE_MSPM33C,
@@ -845,7 +849,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_CC2755: {
         'device_name': TARGET_DEVICE_CC2755,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 17,
+        'device_selection_factor': 4,
         'device_details': TARGET_DEVICE_DETAILS_CC2755,
         'sdk_version': TARGET_SDK_VERSION_CC2755,
         'sdk_release': TARGET_SDK_RELEASE_CC2755,
@@ -853,7 +857,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_CC1352: {
         'device_name': TARGET_DEVICE_CC1352,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 18,
+        'device_selection_factor': 2,
         'device_details': TARGET_DEVICE_DETAILS_CC1352,
         'sdk_version': TARGET_SDK_VERSION_CC1352,
         'sdk_release': TARGET_SDK_RELEASE_CC1352,
@@ -861,7 +865,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_CC1354: {
         'device_name': TARGET_DEVICE_CC1354,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 19,
+        'device_selection_factor': 3,
         'device_details': TARGET_DEVICE_DETAILS_CC1354,
         'sdk_version': TARGET_SDK_VERSION_CC1354,
         'sdk_release': TARGET_SDK_RELEASE_CC1354,
@@ -869,7 +873,7 @@ TARGET_DEVICE_DESCRIPTIONS = {
     TARGET_DEVICE_CC35X1: {
         'device_name': TARGET_DEVICE_CC35X1,
         'device_type': TARGET_DEVICE_TYPE_MCU,
-        'device_selection_factor': 20,
+        'device_selection_factor': 10,
         'device_details': TARGET_DEVICE_DETAILS_CC35X1,
         'sdk_version': TARGET_SDK_VERSION_CC35X1,
         'sdk_release': TARGET_SDK_RELEASE_CC35X1,
@@ -975,16 +979,16 @@ TASK_DESCRIPTIONS = {
         'checkDataEnough': False,
         'task_category': TASK_CATEGORY_TS_REGRESSION
     },
-    TASK_TYPE_GENERIC_TS_ANOMALYDETECTION: {
-        'task_name': 'Time Series Anomaly Detection',
-        'task_group': 'timeseries',
-        'target_module': 'timeseries',
-        'target_devices': TARGET_DEVICES,
-        'stages': ['dataset', 'data_processing_feature_extraction', 'training', 'compilation'],
-        'application_specific': False,
-        'checkDataEnough': False,
-        'task_category': TASK_CATEGORY_TS_ANOMALYDETECTION
-    },
+    # TASK_TYPE_GENERIC_TS_ANOMALYDETECTION: {
+    #     'task_name': 'Time Series Anomaly Detection',
+    #     'task_group': 'timeseries',
+    #     'target_module': 'timeseries',
+    #     'target_devices': TARGET_DEVICES,
+    #     'stages': ['dataset', 'data_processing_feature_extraction', 'training', 'compilation'],
+    #     'application_specific': False,
+    #     'checkDataEnough': False,
+    #     'task_category': TASK_CATEGORY_TS_ANOMALYDETECTION
+    # },
     TASK_TYPE_GENERIC_TS_FORECASTING: {
         'task_name': 'Time Series Forecasting',
         'task_group': 'timeseries',
@@ -1126,7 +1130,7 @@ FEATURE_EXTRACTION_PRESET_DESCRIPTIONS = dict(
         data_processing_feature_extraction=dict(feat_ext_transform=['PIR_FE'], frame_size=125, window_count=25, chunk_size=8, stride_size=0.032, fft_size=64, sampling_rate=33, variables=1),  # ch=3,
         common=dict(task_type=TASK_TYPE_PIR_DETECTION), ),
     PIRDetection_125Input_25Feature_25Frame_1InputChannel_2D_FixedPoint=dict(
-        data_processing_feature_extraction=dict(feat_ext_transform=['PIR_FE_Q15'], frame_size=125, window_count=25, chunk_size=8, stride_size=0.032, fft_size=64, sampling_rate=33, variables=1),  # ch=3,
+        data_processing_feature_extraction=dict(feat_ext_transform=['PIR_FE_Q15'], frame_size=125, window_count=25, chunk_size=8, stride_size=0.032, fft_size=64, sampling_rate=31.25, variables=1),  # ch=3,
         common=dict(task_type=TASK_TYPE_PIR_DETECTION), ),  
 )
 
@@ -1196,7 +1200,7 @@ C2000WARE_ROOT = os.path.abspath(os.getenv('C2000WARE_ROOT', os.path.join(TOOLS_
 C2000WARE_INCLUDE = os.path.join(C2000WARE_ROOT, 'device_support', '{DEVICE_NAME}', 'common', 'include')
 C2000_DRIVERLIB_INCLUDE = os.path.join(C2000WARE_ROOT, 'driverlib', '{DEVICE_NAME}', 'driverlib')
 # C2000 F29 Compiler
-C29_CGT_VERSION = 'ti-cgt-c29_2.1.0.STS'
+C29_CGT_VERSION = 'ti-cgt-c29_2.0.0.STS'
 CG_TOOL_ROOT = os.path.abspath(os.getenv('CG_TOOL_ROOT', os.path.join(TOOLS_PATH, C29_CGT_VERSION)))
 C29CLANG_CROSS_COMPILER = os.path.join(CG_TOOL_ROOT, 'bin', 'c29clang')
 C29_CGT_INCLUDE = os.path.join(CG_TOOL_ROOT, 'include')
@@ -1236,10 +1240,10 @@ CROSS_COMPILER_OPTIONS_MSPM0 = f"-Os -mcpu=cortex-m0plus -march=thumbv6m -mtune=
 CROSS_COMPILER_OPTIONS_AM263 = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-r5 -mfloat-abi=hard -mfpu=vfpv3-d16 -mlittle-endian -O3 -I. -Wno-return-type"
 CROSS_COMPILER_OPTIONS_AM263P = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-r5 -mfloat-abi=hard -mfpu=vfpv3-d16 -mlittle-endian -O3 -I. -Wno-return-type"
 CROSS_COMPILER_OPTIONS_AM261 = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-r5 -mfloat-abi=hard -mfpu=vfpv3-d16 -mlittle-endian -O3 -I. -Wno-return-type"
-CROSS_COMPILER_OPTIONS_MSPM33C = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -mlittle-endian -O3 -I. -Wno-return-type  -march=thumbv8.1-m.main+cdecp0"
-CROSS_COMPILER_OPTIONS_AM13E2 = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -mlittle-endian -O3 -I. -Wno-return-type  -march=thumbv8.1-m.main+cdecp0"
-CROSS_COMPILER_OPTIONS_CC1352 = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -mlittle-endian -O3 -I. -Wno-return-type  -march=thumbv8.1-m.main+cdecp0"
-CROSS_COMPILER_OPTIONS_CC1354 = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -mlittle-endian -O3 -I. -Wno-return-type  -march=thumbv8.1-m.main+cdecp0"
+CROSS_COMPILER_OPTIONS_MSPM33C = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -mlittle-endian -O3 -I. -Wno-return-type -march=thumbv8.1-m.main+cdecp0"
+CROSS_COMPILER_OPTIONS_AM13E2 = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -mlittle-endian -O3 -I. -Wno-return-type -march=thumbv8.1-m.main+cdecp0"
+CROSS_COMPILER_OPTIONS_CC1352 = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -O3 -Wl,-u,_c_int00 -Wno-return-type -march=armv7e-m -mthumb"
+CROSS_COMPILER_OPTIONS_CC1354 = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -mlittle-endian  -O3 -I. -Wno-return-type -march=armv8-m.main"
 CROSS_COMPILER_OPTIONS_CC2755 = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -mlittle-endian -O3 -I. -Wno-return-type  -march=thumbv8.1-m.main+cdecp0"
 CROSS_COMPILER_OPTIONS_CC35X1 = f"-DARM_CPU_INTRINSICS_EXIST -mcpu=cortex-m33 -mfloat-abi=hard -mfpu=fpv5-sp-d16 -mlittle-endian -O3 -I. -Wno-return-type  -march=thumbv8.1-m.main+cdecp0"
 
@@ -1288,11 +1292,13 @@ COMPILATION_AM13E2_SOFT_TINPU_REG = dict(target="c, ti-npu type=soft skip_normal
 COMPILATION_AM13E2_SOFT_TINPU_AD = dict(target="c, ti-npu type=soft skip_normalize=true output_int=false", target_c_mcpu='cortex-m33', cross_compiler=AM13E2_CROSS_COMPILER, )
 COMPILATION_AM13E2_SOFT_TINPU_FORECASTING = dict(target="c, ti-npu type=soft", target_c_mcpu='cortex-m33', cross_compiler=AM13E2_CROSS_COMPILER, )
 COMPILATION_AM13E2_HARD_TINPU_OPT_SPACE = dict(target="c, ti-npu skip_normalize=true output_int=true opt_for_space=true", target_c_mcpu='cortex-m33', cross_compiler=AM13E2_CROSS_COMPILER, )
-# MSPM33 - Connectivity
+# Connectivity Devices
 COMPILATION_CC2755_SOFT_TINPU = dict(target="c, ti-npu type=soft", target_c_mcpu='cortex-m33', cross_compiler=CC2755_CROSS_COMPILER, )
+COMPILATION_CC2755_CDE_TINPU = dict(target="c, ti-npu type=m33cde", target_c_mcpu='cortex-m33', cross_compiler=CC2755_CROSS_COMPILER, )
 COMPILATION_CC1352_SOFT_TINPU = dict(target="c, ti-npu type=soft", target_c_mcpu='cortex-m4', cross_compiler=CC1352_CROSS_COMPILER, )
 COMPILATION_CC1354_SOFT_TINPU = dict(target="c, ti-npu type=soft", target_c_mcpu='cortex-m33', cross_compiler=CC1354_CROSS_COMPILER, )
 COMPILATION_CC35X1_SOFT_TINPU = dict(target="c, ti-npu type=soft", target_c_mcpu='cortex-m33', cross_compiler=CC35X1_CROSS_COMPILER, )
+COMPILATION_CC35X1_CDE_TINPU = dict(target="c, ti-npu type=m33cde", target_c_mcpu='cortex-m33', cross_compiler=CC35X1_CROSS_COMPILER, )
 # AM263
 COMPILATION_AM263_SOFT_TINPU = dict(target="c, ti-npu type=soft skip_normalize=true output_int=true", target_c_mcpu='cortex-r5', cross_compiler=AM263_CROSS_COMPILER, )
 COMPILATION_AM263_SOFT_TINPU_REG = dict(target="c, ti-npu type=soft skip_normalize=true output_int=false", target_c_mcpu='cortex-r5', cross_compiler=AM263_CROSS_COMPILER, )
@@ -1464,7 +1470,8 @@ _DEVICE_PROFILES = {
         'has_hard_npu': True,
     },
     TARGET_DEVICE_CC2755: {
-        'compilation_base': COMPILATION_CC2755_SOFT_TINPU,
+        'compilation_base': COMPILATION_CC2755_CDE_TINPU,
+        'compilation_soft': COMPILATION_CC2755_SOFT_TINPU,
         'has_hard_npu': False,
     },
     TARGET_DEVICE_CC1352: {
@@ -1476,7 +1483,8 @@ _DEVICE_PROFILES = {
         'has_hard_npu': False,
     },
     TARGET_DEVICE_CC35X1: {
-        'compilation_base': COMPILATION_CC35X1_SOFT_TINPU,
+        'compilation_base': COMPILATION_CC35X1_CDE_TINPU,
+        'compilation_soft': COMPILATION_CC35X1_SOFT_TINPU,
         'has_hard_npu': False,
     },
 }

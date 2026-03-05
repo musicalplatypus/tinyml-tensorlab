@@ -19,17 +19,12 @@ Post-training analysis helps you:
 Enabling Analysis
 -----------------
 
-Analysis is enabled through the testing section:
+Post-training analysis is generated automatically when testing is enabled:
 
 .. code-block:: yaml
 
    testing:
      enable: True
-     analysis:
-       confusion_matrix: True
-       roc_curve: True
-       class_histograms: True
-       error_analysis: True
 
 Output Files
 ------------
@@ -247,22 +242,101 @@ Compare quantized model to float baseline:
 
    Degradation: 0.4%
 
+File-Level Classification Summary
+----------------------------------
+
+The File-Level Classification Summary provides an overview of how samples from
+each input file are classified into different classes. It helps users quickly
+identify if any particular file contains misclassified samples.
+
+While the confusion matrix shows overall counts of correct and incorrect
+classifications, it does not reveal which specific files contain those
+misclassified samples. For example, even if the total misclassification count
+is small, it might come entirely from one problematic file. This feature helps
+pinpoint such cases instantly.
+
+**Output Location:**
+
+The summary is written to ``file_level_classification_summary.log`` inside the
+``training/base/`` directory of your project run:
+
+.. code-block:: text
+
+   .../data/projects/{dataset_name}/run/{date-time}/{model_name}/training/base/
+   └── file_level_classification_summary.log
+
+The log file contains tables for float train, quantized train, and test data,
+depending on which stages are enabled in the configuration. Each table shows
+each file, its true class, and the count of samples from that file classified
+into each class.
+
+**Example: Fan Blade Fault Classification**
+
+Consider a fan blade fault classification dataset with four classes: **Normal**,
+**BladeDamage**, **BladeImbalance**, and **BladeObstruction**. The confusion
+matrix for float train best epoch might look like this:
+
+.. list-table:: Confusion Matrix (Float Train)
+   :header-rows: 1
+   :widths: 25 18 18 20 18
+
+   * - Ground Truth
+     - BladeDamage
+     - BladeImbalance
+     - BladeObstruction
+     - Normal
+   * - **BladeDamage**
+     - 1159
+     - 339
+     - 0
+     - 0
+   * - **BladeImbalance**
+     - 0
+     - 1301
+     - 0
+     - 0
+   * - **BladeObstruction**
+     - 0
+     - 0
+     - 962
+     - 0
+   * - **Normal**
+     - 0
+     - 0
+     - 0
+     - 2114
+
+From this confusion matrix, we can see that while all classes other than
+BladeDamage are correctly classified, some BladeDamage samples are incorrectly
+classified as BladeImbalance. However, from the confusion matrix alone, we
+cannot determine which specific files contain these misclassified samples.
+
+When we inspect the File-Level Classification Summary of FloatTrain, we discover
+that in file numbers 0, 1, 2, 20, and 21, **all** samples were classified as
+BladeImbalance even though their true class is BladeDamage. Similarly, in the
+test data, file numbers 7 and 8 have all samples misclassified.
+
+.. tip::
+
+   A higher count of samples in the wrong class column for a specific file
+   indicates potential data or labeling issues in that file.
+
+**Use Cases:**
+
+* **Identifying labeling issues**: Files where all samples are misclassified
+  may have been assigned the wrong label during data collection.
+* **Data quality assessment**: Pinpoint specific recordings or data files that
+  contain noisy, corrupted, or otherwise problematic data.
+* **Targeted investigation**: Rather than reviewing the entire dataset, focus
+  review efforts on the specific files flagged by this summary.
+
 Regression Analysis
 -------------------
 
-For regression tasks, different metrics apply:
+For regression tasks, post-training analysis is generated automatically when
+testing is enabled. The following metrics are reported:
 
-.. code-block:: yaml
-
-   testing:
-     enable: True
-     regression_metrics:
-       mse: True
-       mae: True
-       r2: True
-       scatter_plot: True
-
-**Output:**
+**Example output:**
 
 .. code-block:: text
 
@@ -274,32 +348,51 @@ For regression tasks, different metrics apply:
 Anomaly Detection Analysis
 --------------------------
 
-For anomaly detection:
+For anomaly detection tasks, post-training analysis is generated automatically
+for all runs. No additional configuration options are needed beyond enabling
+testing:
 
 .. code-block:: yaml
 
    testing:
      enable: True
-     anomaly_metrics:
-       reconstruction_error: True
-       threshold_analysis: True
 
-**Output:**
+**Output Files:**
+
+The following analysis outputs are generated in the ``post_training_analysis/``
+folder:
+
+* **``reconstruction_error_histogram.png``** -- Histogram showing the
+  distribution of reconstruction errors for normal and anomaly test data.
+  Good separation between the two distributions indicates the model can
+  distinguish anomalies effectively.
+
+* **``threshold_performance.csv``** -- Contains detection metrics (accuracy,
+  precision, recall, F1 score, false positive rate) for each k value from
+  0 to 4.5. Use this file to select the optimal threshold for your
+  deployment.
+
+**Example training log output:**
 
 .. code-block:: text
 
-   Normal Data:
-   Mean reconstruction error: 0.05
-   Std reconstruction error: 0.02
+   Reconstruction Error Statistics:
+   Normal training data - Mean: 1.662490, Std: 1.968127
+   Anomaly test data   - Mean: 141.985321, Std: 112.756683
+   Normal test data    - Mean: 2.849831, Std: 1.343052
 
-   Anomaly Data:
-   Mean reconstruction error: 0.35
-   Std reconstruction error: 0.15
+   Threshold for K = 4.5: 10.519060
+   False positive rate: 0.00%
+   Anomaly detection rate (recall): 100.00%
 
-   Recommended threshold: 0.15
-   At threshold 0.15:
-   TPR: 0.92
-   FPR: 0.05
+**Key indicators:**
+
+* A large gap between normal mean error and anomaly mean error indicates
+  good detection capability.
+* Check the ``reconstruction_error_histogram.png`` for visual confirmation
+  of distribution separation.
+* Use ``threshold_performance.csv`` to find the k value that gives the
+  best trade-off between precision and recall for your application.
 
 Custom Analysis Scripts
 -----------------------
@@ -365,7 +458,7 @@ Example: Complete Analysis Configuration
      variables: 1
 
    training:
-     model_name: 'ArcFault_model_400_t'
+     model_name: 'CLS_4k_NPU'
      training_epochs: 30
      quantization: 2
      quantization_method: 'QAT'

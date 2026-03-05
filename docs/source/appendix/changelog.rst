@@ -78,7 +78,7 @@ Version 1.0.0
 * C2000 family (F28P55, F28P65, F2837, etc.)
 * MSPM0 family (MSPM0G3507, MSPM0G3519)
 * AM26x family (AM263, AM263P, AM261)
-* Connectivity devices (CC2755, CC1352)
+* Connectivity devices (CC2755, CC1352, CC1354, CC35X1)
 
 **Models:**
 
@@ -129,8 +129,8 @@ Model access changed:
    model = get_model('CLS_1k')
 
    # New
-   from tinyml_tinyverse.common.models import MODEL_REGISTRY
-   model_class = MODEL_REGISTRY['CLS_1k']
+   from tinyml_modelzoo.models import get_model
+   model = get_model('CLS_1k', variables=1, num_classes=2, input_features=128)
 
 Deprecation Notices
 -------------------

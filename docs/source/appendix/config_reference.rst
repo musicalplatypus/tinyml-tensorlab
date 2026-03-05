@@ -68,9 +68,10 @@ General project settings.
 
 * C2000: F28P55, F28P65, F29H85, F29P58, F29P32, F2837, F28004, F28003, F280013, F280015
 * MSPM0: MSPM0G3507, MSPM0G3519, MSPM0G5187
-* MSPM33C: MSPM33C32, MSPM33C34, AM13E2
+* MSPM33C: MSPM33C32, MSPM33C34
+* AM13: AM13E2
 * AM26x: AM263, AM263P, AM261
-* Connectivity: CC2755, CC1352
+* Connectivity: CC2755, CC1352, CC1354, CC35X1
 
 Dataset Section
 ---------------
@@ -348,43 +349,54 @@ Testing Section
      - False
      - Save misclassified samples
 
-NAS Section
------------
+NAS Options (under ``training`` section)
+-----------------------------------------
+
+NAS parameters are specified within the ``training`` section, not as a
+separate section.
 
 .. code-block:: yaml
 
-   nas:
-     enable: True
-     search_type: 'multi_trial'
-     num_trials: 20
-     param_range: [500, 5000]
-     accuracy_target: 0.95
+   training:
+     nas_enabled: True
+     nas_epochs: 10
+     nas_optimization_mode: 'Memory'
+     nas_model_size: 'm'
 
 .. list-table::
    :header-rows: 1
-   :widths: 25 15 60
+   :widths: 30 15 55
 
    * - Option
      - Default
      - Description
-   * - ``enable``
+   * - ``nas_enabled``
      - False
-     - Enable NAS
-   * - ``search_type``
-     - 'multi_trial'
-     - 'single_trial', 'multi_trial'
-   * - ``num_trials``
-     - 20
-     - Architectures to evaluate
-   * - ``param_range``
-     - [500, 5000]
-     - [min, max] parameters
-   * - ``accuracy_target``
-     - 0.9
-     - Minimum accuracy target
-   * - ``npu_compatible``
-     - True
-     - Enforce NPU constraints
+     - Enable Neural Architecture Search
+   * - ``nas_epochs``
+     - 10
+     - Number of NAS search epochs
+   * - ``nas_optimization_mode``
+     - 'Memory'
+     - ``'Memory'`` (optimize parameters) or ``'Compute'`` (optimize MACs/FLOPs)
+   * - ``nas_model_size``
+     - 'm'
+     - Preset: ``'s'``, ``'m'``, ``'l'``, ``'xl'``, ``'xxl'``
+   * - ``nas_nodes_per_layer``
+     - (set by preset)
+     - Nodes per layer in DAG (customization mode)
+   * - ``nas_layers``
+     - (set by preset)
+     - Number of layers, minimum 3 (customization mode)
+   * - ``nas_init_channels``
+     - (set by preset)
+     - Initial conv layer channels (customization mode)
+   * - ``nas_init_channel_multiplier``
+     - (set by preset)
+     - Channel multiplier for subsequent layers (customization mode)
+   * - ``nas_fanout_concat``
+     - (set by preset)
+     - Nodes per layer concatenated for output (customization mode)
 
 Compilation Section
 -------------------
@@ -479,7 +491,7 @@ Complete Example
 
    training:
      enable: True
-     model_name: 'ArcFault_model_400_t'
+     model_name: 'CLS_4k_NPU'
      training_epochs: 30
      batch_size: 256
      learning_rate: 0.001

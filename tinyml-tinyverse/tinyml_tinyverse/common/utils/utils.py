@@ -77,6 +77,8 @@ from glob import glob
 from logging import getLogger
 from os.path import basename as opb
 
+import matplotlib
+matplotlib.use('Agg') # Force non-interactive backend
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 from sklearn.preprocessing import label_binarize
@@ -1312,10 +1314,11 @@ def train_one_epoch_anomalydetection(
         amp_autocast=None, grad_scaler=None, **kwargs):
     import contextlib
     amp_ctx = amp_autocast or contextlib.nullcontext()
+    logger = getLogger(f"root.train_utils.train.{phase}")
     model.train()
     print_freq = print_freq if print_freq else len(data_loader)
     metric_logger = MetricLogger(delimiter="  ", phase=phase)
-    header = f"Training   - Epoch[{epoch}]:"
+    header = f"Training   - Epoch[{epoch}]: "
     if transform:
         transform = transform.to(device)
     for _, data, labels in metric_logger.log_every(data_loader, print_freq, header):
@@ -1350,6 +1353,7 @@ def train_one_epoch_anomalydetection(
 
         metric_logger.update(loss=loss.detach())
 
+    logger.info(f'{header} MSE {metric_logger.loss.global_avg:.6f}')
     if model_ema:
         model_ema.update_parameters(model)
 
@@ -1380,6 +1384,7 @@ def evaluate_anomalydetection(
             batch_size = data.shape[0]
             metric_logger.update(loss=loss.detach())
     metric_logger.synchronize_between_processes()
+    logger.info(f'{header} MSE {metric_logger.loss.global_avg:.6f}')
     return metric_logger.loss.global_avg
 
 
