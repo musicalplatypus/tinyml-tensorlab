@@ -73,7 +73,6 @@ from logging import getLogger
 
 import numpy as np
 import pandas as pd
-from collections import defaultdict
 from tinyml_tinyverse.common.models import NeuralNetworkWithPreprocess
 from tinyml_torchmodelopt.quantization import TinyMLQuantizationVersion, TinyMLQuantizationMethod
 from tinyml_torchmodelopt.nas.train_cnn_search import search_and_get_model
@@ -412,7 +411,7 @@ def main(gpu, args):
     # logger = command_display(args.lis or log_file, args.DEBUG)
     # utils.seed_everything(args.seed)
     logger = getLogger("root.main")
-    from ..version import get_version_str
+    from tinyml_tinyverse.version import get_version_str
     logger.info(f"TinyVerse Toolchain Version: {get_version_str()}")
     logger.info("Script: {}".format(os.path.relpath(__file__)))
 

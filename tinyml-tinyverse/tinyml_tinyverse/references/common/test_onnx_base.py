@@ -126,7 +126,7 @@ def setup_test_environment(args, task_name='test'):
     logger = Logger(log_file=args.lis or log_file, DEBUG=args.DEBUG, name="root", append_log=True, console_log=True)
     utils.seed_everything(args.seed)
 
-    from ..version import get_version_str
+    from tinyml_tinyverse.version import get_version_str
     logger.info(f"TinyVerse Toolchain Version: {get_version_str()}")
     logger.info("Script: {}".format(os.path.relpath(__file__)))
 
