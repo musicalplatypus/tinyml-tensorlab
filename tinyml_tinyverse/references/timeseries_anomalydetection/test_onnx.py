@@ -34,7 +34,6 @@ Time series anomaly detection ONNX model testing script.
 
 import csv
 import os
-from logging import getLogger
 
 import numpy as np
 import torch
@@ -152,7 +151,7 @@ def main(gpu, args):
     log_file = os.path.join(args.output_dir, 'run.log')
     logger = Logger(log_file=args.lis or log_file, DEBUG=args.DEBUG, name="root", append_log=True, console_log=True)
     utils.seed_everything(args.seed)
-    from ..version import get_version_str
+    from tinyml_tinyverse.version import get_version_str
     logger.info(f"TinyVerse Toolchain Version: {get_version_str()}")
     logger.info("Script: {}".format(os.path.relpath(__file__)))
 
