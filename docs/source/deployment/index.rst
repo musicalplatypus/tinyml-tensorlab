@@ -221,14 +221,31 @@ project location depends on your device family:
 
 .. code-block:: text
 
-   {F29H85X_SDK_INSTALL_PATH}/examples/rtlibs/ai/examples/
-   ├── generic_timeseries_classification/
-   ├── generic_timeseries_regression/
-   ├── generic_timeseries_forecasting/
-   └── generic_timeseries_anomalydetection/
+   {F29H85X_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_classification/
+   {F29H85X_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_regression/
+   {F29H85X_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_forecasting/
+   {F29H85X_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_anomalydetection/
+
+**MCU SDK (AM13E devices):**
+
+.. code-block:: text
+
+   {MCU_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_classification/
+   {MCU_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_regression/
+   {MCU_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_forecasting/
+   {MCU_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_anomalydetection/
+
+**MSPM33 SDK (MSPM33C devices):**
+
+.. code-block:: text
+
+   {MSPM33_SDK_INSTALL_PATH}/examples/edgeAI/generic_timeseries_classification/
+   {MSPM33_SDK_INSTALL_PATH}/examples/edgeAI/generic_timeseries_regression/
+   {MSPM33_SDK_INSTALL_PATH}/examples/edgeAI/generic_timeseries_forecasting/
+   {MSPM33_SDK_INSTALL_PATH}/examples/edgeAI/generic_timeseries_anomalydetection/
 
 Inside each task-type folder, select the subfolder matching your target device
-(e.g., ``f28p55x/``, ``f28004x/``, ``f29h85x/``).
+(e.g., ``f28p55x/``, ``f28004x/``, ``f29h85x/``, ``am13e2/``, ``mspm33c321a/``).
 
 Task-Type-Specific Deployment Notes
 ------------------------------------
