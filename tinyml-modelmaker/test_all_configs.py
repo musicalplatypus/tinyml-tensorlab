@@ -18,9 +18,10 @@ from datetime import datetime
 from pathlib import Path
 
 # Configuration
-EXAMPLES_DIR = Path("examples")
-LOGS_DIR = Path("test_logs")
-RUN_SCRIPT = Path(os.path.join("tinyml_modelmaker", "run_tinyml_modelmaker.py"))
+_SCRIPT_DIR = Path(__file__).parent
+EXAMPLES_DIR = _SCRIPT_DIR.parent / "tinyml-modelzoo" / "examples"
+LOGS_DIR = _SCRIPT_DIR / "test_logs"
+RUN_SCRIPT = _SCRIPT_DIR / "tinyml_modelmaker" / "run_tinyml_modelmaker.py"
 
 # Create logs directory
 LOGS_DIR.mkdir(exist_ok=True)
@@ -61,7 +62,7 @@ def run_config(config_path, timeout=600):
             capture_output=True,
             text=True,
             timeout=timeout,
-            cwd=Path.cwd(),
+            cwd=_SCRIPT_DIR,
             env=env
         )
 
