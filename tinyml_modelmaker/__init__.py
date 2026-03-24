@@ -30,6 +30,7 @@
 
 from . import ai_modules
 from .run_tinyml_modelmaker import main as get_set_go
+from .version import __version__
 
 
 def get_target_module_from_task_type(task_type):
