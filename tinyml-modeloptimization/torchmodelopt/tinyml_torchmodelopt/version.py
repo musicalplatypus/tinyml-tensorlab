@@ -1,5 +1,4 @@
-#################################################################################
-# Copyright (c) 2018-2025, Texas Instruments Incorporated - http://www.ti.com
+# Copyright (c) 2018-2025, Texas Instruments
 # All Rights Reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -26,7 +25,27 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-#################################################################################
 
-from .version import __version__
+import argparse
+
+__version__ = '1.3.0'
+
+
+def print_version():
+    print(__version__)
+
+
+def print_version_(delimiter):
+    version_str = delimiter.join([f'{r:0>2}' for r in __version__.split('.')])
+    print(version_str)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--delimiter', default=None)
+    args = parser.parse_args()
+    if args.delimiter is not None:
+        print_version_(args.delimiter)
+    else:
+        print_version()
+

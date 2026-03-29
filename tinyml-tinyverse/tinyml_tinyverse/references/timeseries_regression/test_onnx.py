@@ -40,7 +40,7 @@ import torch
 import torcheval
 
 from tinyml_tinyverse.common.datasets import GenericTSDataset, GenericTSDatasetReg
-from tinyml_tinyverse.common.utils import misc_utils, utils, mdcl_utils
+from tinyml_tinyverse.common.utils import utils, mdcl_utils
 from tinyml_tinyverse.common.utils.mdcl_utils import Logger
 
 # Import common functions from base module
@@ -63,7 +63,8 @@ def get_args_parser():
         if action.dest == 'loader_type':
             action.default = 'regression'
             break
-
+    #MSP specific 
+    parser.add_argument('--q15-scale-factor', help="q15 scaling factor")
     return parser
 
 
@@ -77,7 +78,7 @@ def main(gpu, args):
     log_file = os.path.join(args.output_dir, 'run.log')
     logger = Logger(log_file=args.lis or log_file, DEBUG=args.DEBUG, name="root", append_log=True, console_log=True)
     utils.seed_everything(args.seed)
-    from ..version import get_version_str
+    from tinyml_tinyverse.version import get_version_str
     logger.info(f"TinyVerse Toolchain Version: {get_version_str()}")
     logger.info("Script: {}".format(os.path.relpath(__file__)))
 

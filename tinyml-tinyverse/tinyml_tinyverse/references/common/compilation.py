@@ -180,7 +180,7 @@ def remove_intermittent_files(dir):
 def main(args):
     logger = Logger(log_file=args.lis or os.path.join(args.output_dir, 'compilation.lis'),
                     DEBUG=args.DEBUG, name="root", append_log=True, console_log=True)
-    from ..version import get_version_str
+    from tinyml_tinyverse.version import get_version_str
     logger.info(f"TinyVerse Toolchain Version: {get_version_str()}")
     logger.info("Script: {}".format(os.path.relpath(__file__)))
     logger.debug(args)

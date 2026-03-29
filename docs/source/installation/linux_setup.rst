@@ -111,6 +111,33 @@ Verification
    python -c "import tinyml_modelzoo; print('OK')"
    python -c "import tinyml_torchmodelopt; print('OK')"
 
+**Configure Environment Variables**
+
+.. warning::
+
+   **IMPORTANT: Environment Variables Required for Model Compilation**
+
+   For AI model compilation to work, you MUST set environment variables
+   specific to your target device **before running examples**.
+
+   The variables you need depend on which device you're targeting:
+
+   * **C2000 devices (F28P55, F28P65, etc.)**: Set ``C2000_CG_ROOT`` and ``C2000WARE_ROOT``
+   * **F29 devices (F29H85X, etc.)**: Set ``CG_TOOL_ROOT``
+   * **MSPM0 devices**: Set ``ARM_LLVM_CGT_PATH``
+   * **AM13E devices**: Set ``ARM_LLVM_CGT_PATH``
+   * **AM26x devices**: Set ``ARM_LLVM_CGT_PATH``
+   * **Connectivity devices (CC2755, CC1352, etc.)**: Set ``ARM_LLVM_CGT_PATH``
+
+   See :doc:`environment_variables` for complete device-specific setup instructions.
+
+**Run Hello World Example**
+
+.. code-block:: bash
+
+   # Activate environment
+   source venv/bin/activate
+
    # Run hello world example
    cd tinyml-modelzoo
    ./run_tinyml_modelzoo.sh examples/generic_timeseries_classification/config.yaml

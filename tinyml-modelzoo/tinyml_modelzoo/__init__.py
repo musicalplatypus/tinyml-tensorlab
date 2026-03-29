@@ -39,8 +39,7 @@ This package provides:
 """
 
 from .models import model_dict, get_model
-
-__version__ = "1.3.0"
+from .version import __version__
 
 __all__ = [
     "model_dict",

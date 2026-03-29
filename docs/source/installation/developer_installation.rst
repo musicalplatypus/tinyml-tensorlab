@@ -98,20 +98,44 @@ If the script doesn't work or you're on Windows:
 Step 3: Verify Installation
 ---------------------------
 
-Verify all components are installed:
+Verify all components are installed by importing the packages and checking versions:
 
 .. code-block:: python
 
    import tinyml_modelmaker
    import tinyml_tinyverse
-   import tinyml_modelzoo
    import tinyml_torchmodelopt
+   import tinyml_modelzoo
 
-   # Check versions
-   print(f"ModelMaker: {tinyml_modelmaker.__version__}")
-   print(f"TinyVerse: {tinyml_tinyverse.__version__}")
+   print(f"TI Tiny ML ModelMaker: {tinyml_modelmaker.__version__}")
+   print(f"TI Tiny ML Tinyverse: {tinyml_tinyverse.__version__}")
+   print(f"TI Tiny ML Model Optimization toolkit: {tinyml_torchmodelopt.__version__}")
+   print(f"TI Tiny ML Model Zoo: {tinyml_modelzoo.__version__}")
 
-Run the hello world example:
+If all packages import without errors and versions are displayed, your installation is complete.
+
+Step 4: Configure Environment Variables
+----------------------------------------
+
+.. warning::
+
+   **IMPORTANT: Environment Variables Required for Model Compilation**
+
+   For AI model compilation to work, you MUST set environment variables
+   specific to your target device **before running examples**.
+
+   The variables you need depend on which device you're targeting:
+
+   * **C2000 devices (F28P55, F28P65, etc.)**: Set ``C2000_CG_ROOT`` and ``C2000WARE_ROOT``
+   * **F29 devices (F29H85X, etc.)**: Set ``CG_TOOL_ROOT``
+   * **MSPM0 devices**: Set ``ARM_LLVM_CGT_PATH``
+   * **AM13E devices**: Set ``ARM_LLVM_CGT_PATH``
+   * **AM26x devices**: Set ``ARM_LLVM_CGT_PATH``
+   * **Connectivity devices (CC2755, CC1352, etc.)**: Set ``ARM_LLVM_CGT_PATH``
+
+   See :doc:`environment_variables` for complete device-specific setup instructions.
+
+Step 5: Run the hello world example:
 
 .. tabs::
 
