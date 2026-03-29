@@ -16,6 +16,40 @@ Choose the installation path that best fits your needs.
    linux_setup
    environment_variables
 
+Which Install Should I Choose?
+-------------------------------
+
+Before diving into the prerequisites or detailed guides, use this table to pick
+the right installation type for your situation:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 65
+
+   * - Scenario
+     - Use This Install
+   * - I want to train models on my own data using TI-provided models
+     - **User Install** (:doc:`user_installation`)
+   * - I want to run the provided examples without modifying source code
+     - **User Install** (:doc:`user_installation`)
+   * - I want to use Tensorlab as a library in my own Python scripts
+     - **User Install** (:doc:`user_installation`)
+   * - I want to add custom model architectures to the model zoo
+     - **Developer Install** (:doc:`developer_installation`)
+   * - I want to modify or debug the training pipeline itself
+     - **Developer Install** (:doc:`developer_installation`)
+   * - I want to contribute to the Tensorlab codebase
+     - **Developer Install** (:doc:`developer_installation`)
+   * - I want to integrate new feature extraction transforms
+     - **Developer Install** (:doc:`developer_installation`)
+
+**In summary:**
+
+* **User Install** -- Install and use. No source code changes. Best for the
+  majority of users who want to train models on their own data.
+* **Developer Install** -- Clone and edit. Gives full access to source code.
+  Required only if you need to extend or modify the framework itself.
+
 Quick Start
 -----------
 

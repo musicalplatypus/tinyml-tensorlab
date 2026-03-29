@@ -70,7 +70,6 @@ anomaly detection, and forecasting tasks.
 import datetime
 import os
 import platform
-import random
 import sys
 import timeit
 from argparse import ArgumentParser
@@ -458,7 +457,7 @@ def setup_training_environment(args, gpu, task_name, script_file):
     logger = getLogger("root.main")
     utils.seed_everything(args.seed)
 
-    from ..version import get_version_str
+    from tinyml_tinyverse.version import get_version_str
     logger.info(f"TinyVerse Toolchain Version: {get_version_str()}")
     logger.info("Script: {}".format(os.path.relpath(script_file)))
 

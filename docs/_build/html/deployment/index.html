@@ -173,7 +173,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <li class="toctree-l3"><a class="reference internal" href="../installation/environment_variables.html#next-steps">2.6.6. Next Steps</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../installation/index.html#quick-start">2.7. Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/index.html#which-install-should-i-choose">2.7. Which Install Should I Choose?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../installation/index.html#quick-start">2.8. Quick Start</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">3. Getting Started</a><ul>
@@ -1520,15 +1521,28 @@ project location depends on your device family:</p>
 </pre></div>
 </div>
 <p><strong>F29H85X SDK (F29x devices):</strong></p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{F29H85X_SDK_INSTALL_PATH}/examples/rtlibs/ai/examples/
-├── generic_timeseries_classification/
-├── generic_timeseries_regression/
-├── generic_timeseries_forecasting/
-└── generic_timeseries_anomalydetection/
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{F29H85X_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_classification/
+{F29H85X_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_regression/
+{F29H85X_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_forecasting/
+{F29H85X_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_anomalydetection/
+</pre></div>
+</div>
+<p><strong>MCU SDK (AM13E devices):</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{MCU_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_classification/
+{MCU_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_regression/
+{MCU_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_forecasting/
+{MCU_SDK_INSTALL_PATH}/examples/ai/generic_timeseries_anomalydetection/
+</pre></div>
+</div>
+<p><strong>MSPM33 SDK (MSPM33C devices):</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>{MSPM33_SDK_INSTALL_PATH}/examples/edgeAI/generic_timeseries_classification/
+{MSPM33_SDK_INSTALL_PATH}/examples/edgeAI/generic_timeseries_regression/
+{MSPM33_SDK_INSTALL_PATH}/examples/edgeAI/generic_timeseries_forecasting/
+{MSPM33_SDK_INSTALL_PATH}/examples/edgeAI/generic_timeseries_anomalydetection/
 </pre></div>
 </div>
 <p>Inside each task-type folder, select the subfolder matching your target device
-(e.g., <code class="docutils literal notranslate"><span class="pre">f28p55x/</span></code>, <code class="docutils literal notranslate"><span class="pre">f28004x/</span></code>, <code class="docutils literal notranslate"><span class="pre">f29h85x/</span></code>).</p>
+(e.g., <code class="docutils literal notranslate"><span class="pre">f28p55x/</span></code>, <code class="docutils literal notranslate"><span class="pre">f28004x/</span></code>, <code class="docutils literal notranslate"><span class="pre">f29h85x/</span></code>, <code class="docutils literal notranslate"><span class="pre">am13e2/</span></code>, <code class="docutils literal notranslate"><span class="pre">mspm33c321a/</span></code>).</p>
 </section>
 <section id="task-type-specific-deployment-notes">
 <h2><span class="section-number">9.9. </span>Task-Type-Specific Deployment Notes<a class="headerlink" href="#task-type-specific-deployment-notes" title="Link to this heading"></a></h2>
@@ -1624,7 +1638,7 @@ for all compilation options.</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2026, Texas Instruments Incorporated.
-      <span class="lastupdated">Last updated on Feb 26, 2026.
+      <span class="lastupdated">Last updated on Mar 24, 2026.
       </span></p>
   </div>
 

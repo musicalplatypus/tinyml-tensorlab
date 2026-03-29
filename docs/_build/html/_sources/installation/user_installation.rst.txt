@@ -29,7 +29,25 @@ This installs:
 Running Your First Example
 --------------------------
 
-After installation, you can run the hello world example:
+.. warning::
+
+   **IMPORTANT: Environment Variables Required for Model Compilation**
+
+   For AI model compilation to work, you MUST set environment variables
+   specific to your target device **before running examples**.
+
+   The variables you need depend on which device you're targeting:
+
+   * **C2000 devices (F28P55, F28P65, etc.)**: Set ``C2000_CG_ROOT`` and ``C2000WARE_ROOT``
+   * **F29 devices (F29H85X, etc.)**: Set ``CG_TOOL_ROOT``
+   * **MSPM0 devices**: Set ``ARM_LLVM_CGT_PATH``
+   * **AM13E devices**: Set ``ARM_LLVM_CGT_PATH``
+   * **AM26x devices**: Set ``ARM_LLVM_CGT_PATH``
+   * **Connectivity devices (CC2755, CC1352, etc.)**: Set ``ARM_LLVM_CGT_PATH``
+
+   See :doc:`environment_variables` for complete device-specific setup instructions.
+
+After setting environment variables for your target device, run the hello world example:
 
 .. code-block:: bash
 
@@ -37,7 +55,7 @@ After installation, you can run the hello world example:
    git clone --depth 1 https://github.com/TexasInstruments/tinyml-tensorlab.git
    cd tinyml-tensorlab/tinyml-modelzoo
 
-   # Run the example
+   # Run the example (trains and compiles for the device specified in config.yaml)
    python -m tinyml_modelmaker examples/generic_timeseries_classification/config.yaml
 
 Output will be saved to ``../tinyml-modelmaker/data/projects/``.
@@ -45,16 +63,21 @@ Output will be saved to ``../tinyml-modelmaker/data/projects/``.
 Verifying Installation
 ----------------------
 
-Verify the installation by importing the packages:
+Verify the installation by importing the packages and checking versions:
 
 .. code-block:: python
 
    import tinyml_modelmaker
    import tinyml_tinyverse
-   import tinyml_modelzoo
    import tinyml_torchmodelopt
+   import tinyml_modelzoo
 
-   print("Installation successful!")
+   print(f"TI Tiny ML ModelMaker: {tinyml_modelmaker.__version__}")
+   print(f"TI Tiny ML Tinyverse: {tinyml_tinyverse.__version__}")
+   print(f"TI Tiny ML Model Optimization toolkit: {tinyml_torchmodelopt.__version__}")
+   print(f"TI Tiny ML Model Zoo: {tinyml_modelzoo.__version__}")
+
+If all packages import without errors and versions are displayed, your installation is complete.
 
 Updating
 --------

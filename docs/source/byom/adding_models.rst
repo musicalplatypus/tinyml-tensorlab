@@ -5,6 +5,12 @@ Adding Custom Models
 This guide explains how to add your own neural network architectures
 to Tiny ML Tensorlab's model zoo.
 
+.. seealso::
+
+   For a detailed reference guide with code examples, see the
+   `ADDING_NEW_MODELS.md <https://github.com/TexasInstruments/tinyml-tensorlab/blob/main/tinyml-modelzoo/ADDING_NEW_MODELS.md>`_
+   file in the tinyml-modelzoo repository.
+
 Overview
 --------
 
