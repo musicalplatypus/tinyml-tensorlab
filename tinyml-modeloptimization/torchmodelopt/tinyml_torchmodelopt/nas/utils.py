@@ -1,6 +1,7 @@
 import numpy as np
 import torch
 import os
+import logging
 
 class AvgrageMeter(object):
     """
@@ -80,4 +81,27 @@ def create_exp_dir(path):
     """
     if not os.path.exists(path):
         os.mkdir(path)
+
+def get_device(gpu_index=0):
+    """
+    Return the best available torch.device for NAS.
+
+    Preference order: CUDA (with specified index) > MPS (Apple Silicon) > CPU.
+
+    Args:
+        gpu_index (int): CUDA device index (ignored for MPS/CPU).
+    Returns:
+        torch.device: The resolved compute device.
+    """
+    logger = logging.getLogger("root.modelopt.nas")
+    if torch.cuda.is_available():
+        device = torch.device(f'cuda:{gpu_index}')
+        logger.info('NAS device: %s (%s)', device, torch.cuda.get_device_name(device))
+    elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+        device = torch.device('mps')
+        logger.info('NAS device: mps (Apple Metal)')
+    else:
+        device = torch.device('cpu')
+        logger.info('NAS device: cpu')
+    return device
     print('Experiment dir : {}'.format(path))
