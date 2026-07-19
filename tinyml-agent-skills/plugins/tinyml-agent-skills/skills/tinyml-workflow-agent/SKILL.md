@@ -111,6 +111,15 @@ python3 $SCRIPTS_DIR/runner.py get_update_status '{}'
   - `update_available: false` → proceed normally
 - **`mode: "pinned"`** → proceed normally
 
+### 4. Check mmcli availability
+
+```bash
+mmcli --version 2>/dev/null && echo "MMCLI_AVAILABLE=true" || echo "MMCLI_AVAILABLE=false"
+```
+
+- **Available** — set `MMCLI_AVAILABLE=true`. After Step 2, offer the **Express Path** (see below) as an alternative to the full runner.py workflow.
+- **Not available** — set `MMCLI_AVAILABLE=false`. Proceed with the full runner.py workflow as normal.
+
 Always create config files in the `/examples` directory within `tinyml-tensorlab/tinyml-modelzoo`.
 
 **Session state — track these throughout all steps. `.env` variables are pre-loaded from setup. Remaining variables set progressively; do NOT write them to `.env`.**
@@ -132,6 +141,9 @@ Always create config files in the `/examples` directory within `tinyml-tensorlab
 | `EFFECTIVE_DATA_PATH`       | Step 4  | Path after any auto-reorganization       |
 | `QUANTIZATION_MODE`         | Step 8C | 0/1/2 — drives compilation preset       |
 | `NAS_ENABLED`               | Step 8D | true/false                               |
+| `MMCLI_AVAILABLE`           | Session Setup 4 | true/false — enables express path and mmcli alternatives |
+| `DATASET_SIZE_BUCKET`       | Step 6A / Express E1 | tiny/small/medium/large              |
+| `AUTO_QUANTIZATION`         | Step 8C (optional) | true — mmcli binary-search bitwidth mode  |
 
 ---
 
@@ -191,6 +203,59 @@ User: "motor fault detection"
 → Ask: "Classify fault vs healthy (motor_fault / generic_timeseries_classification)
         or detect anomalies (generic_timeseries_anomalydetection)?"
 ```
+
+---
+
+## Express Path via mmcli (if `MMCLI_AVAILABLE=true`)
+
+If mmcli is available, offer this shorter path immediately after Step 2. It skips Steps 3–11 (config assembly).
+
+> Tell the user: "mmcli is installed — I can walk through the full config workflow (Steps 3–11) for maximum control, or use mmcli for a faster path. Which do you prefer?"
+
+If user chooses the express path:
+
+### E1. Analyze dataset
+```bash
+mmcli analyze -i $DATA_PATH
+```
+Read the output for dataset size bucket (tiny / small / medium / large). Store as `DATASET_SIZE_BUCKET`.
+
+### E2. Recommend model
+```bash
+mmcli recommend -t $TASK_TYPE -d $TARGET_DEVICE --variables $VARIABLES \
+  --dataset-size-bucket $DATASET_SIZE_BUCKET
+```
+Present the ranked results. Ask user to confirm the recommended model or choose an alternative. Store as `MODEL_NAME`.
+
+### E3. Preview config (dry run)
+```bash
+mmcli run -m timeseries -t $TASK_TYPE -d $TARGET_DEVICE -n $MODEL_NAME \
+  -i $DATA_PATH --dry-run
+```
+Show the user the generated YAML. Ask: "Happy with this config? Want to adjust anything before training starts?"
+
+Common override flags to offer if the user wants to tune:
+```bash
+# Quantization (pick one — see Step 8C for explanation of modes):
+--quantization QUANTIZATION_TINPU   # mode 2 — NPU-optimized (recommended for NPU devices)
+--quantization NO_QUANTIZATION      # mode 0 — float32, no compression
+--auto-quantization                 # binary search for optimal per-layer bitwidth
+
+# Other:
+--feature-extraction <preset>       # override FE preset
+--preset auto | default_preset | forced_soft_npu_preset | compress_npu_layer_data
+--epochs N  --batch-size N  --lr FLOAT
+```
+
+### E4. Run training
+```bash
+mmcli run -m timeseries -t $TASK_TYPE -d $TARGET_DEVICE -n $MODEL_NAME \
+  -i $DATA_PATH [flags confirmed in E3]
+```
+
+After training completes, extract `RUN_ID` and `MODEL_ID` from the output logs, then continue at **Step 12B** (memory footprint check). Skip to **Step 13** (deployment) when ready.
+
+**macOS note:** exit code 245 after a successful run is a benign onnxsim shutdown crash — all artifacts are written before it fires. Treat both 0 and 245 as success.
 
 ---
 
@@ -265,7 +330,14 @@ python3 $SCRIPTS_DIR/runner.py generate_dataset_section_yaml \
 ---
 
 ## Step 6A: Analyze dataset for statistical insights
-Run:
+
+**mmcli alternative (if `MMCLI_AVAILABLE=true`):**
+```bash
+mmcli analyze -i $EFFECTIVE_DATA_PATH
+```
+Output includes dataset size bucket directly — store the bucket as `DATASET_SIZE_BUCKET` and use it in Step 7. The sample counts per class are also shown; use them to populate the `data_distribution` block below. Skip building `.tmp_dataset_stats.json` from raw JSON if using this path.
+
+**runner.py path:**
 ```bash
 python3 $SCRIPTS_DIR/runner.py analyse_dataset \
   "{\"formatted_dataset_path\": \"$EFFECTIVE_DATA_PATH\", \"task_family\": \"{classification/anomalydetection/regression/forecasting}\"}"
@@ -374,6 +446,15 @@ Note: only pass `frame_size` if `SimpleWindow` is in `data_proc_transforms`. Onl
 Refer `$WORK_DIR/.tmp_dataset_stats.json` to get insight on statistical information about the dataset. Basis this, proceed to **Part B (Model recommendation)**.
 
 **Part B — get model recommendations:**
+
+**mmcli alternative (if `MMCLI_AVAILABLE=true`):**
+```bash
+mmcli recommend -t $TASK_TYPE -d $TARGET_DEVICE --variables $VARIABLES \
+  --dataset-size-bucket $DATASET_SIZE_BUCKET
+```
+Output is a ranked table with scores — equivalent to Parts B + C combined. Skip the separate `list_available_models` call below if using mmcli recommend.
+
+**runner.py path:**
 ```bash
 python3 $SCRIPTS_DIR/runner.py select_model_for_task \
   "{\"task_type\": \"$TASK_TYPE\", \"target_device\": \"$TARGET_DEVICE\", \"target_module\": \"$TARGET_MODULE\", \"variables\": $VARIABLES, \"dataset_size_bucket\": \"<from Part A>\", \"modelzoo_path\": \"$TINYML_BASE_PATH/tinyml-modelzoo/examples\"}"
@@ -469,6 +550,16 @@ Ask:
 - "Which quantization mode do you want? (0 / 1 / 2)" → store as `QUANTIZATION_MODE`
 
 That's it. No need to ask about PTQ/QAT or bit widths — AMP handles per-layer precision automatically.
+
+**Auto-quantization option (mmcli express path or advanced users):**
+If the user is unsure which mode gives the best accuracy/size trade-off, `--auto-quantization` runs a binary search to find the optimal per-layer bitwidth automatically. Available when running via mmcli only (not the runner.py path). Set `AUTO_QUANTIZATION=true` and omit `QUANTIZATION_MODE` — the flag replaces the manual mode selection.
+
+```bash
+# In Step E4 (mmcli express path) — add instead of --quantization:
+mmcli run ... --auto-quantization
+```
+
+For the runner.py path, `QUANTIZATION_MODE` must still be chosen manually (0 / 1 / 2).
 
 > Quantization mode will also determine the compilation preset in Step 10 — setting it correctly here matters for end-to-end correctness.
 
@@ -649,7 +740,43 @@ QUANTIZATION=<true or false>
 CCS_INSTALL_PATH=<user-provided, e.g., /opt/ti/ccs1260>
 ```
 
-**Four scripted steps:**
+### mmcli deploy path (preferred if `MMCLI_AVAILABLE=true`)
+
+mmcli wraps the four runner.py steps (13A–13D) into three simpler commands. Use this path when mmcli is available — fall back to Steps 13A–13D only if mmcli deploy fails.
+
+**Verify SDK:**
+```bash
+mmcli deploy check-sdk -d $TARGET_DEVICE
+```
+
+**Create CCS project (copies artifacts + golden vectors automatically):**
+```bash
+mmcli deploy create \
+  -d $TARGET_DEVICE -t $TASK_TYPE \
+  --run-id $RUN_ID --model-id $MODEL_ID \
+  --project-name $TASK_NAME
+```
+Store returned project path as `$CCS_PROJECT_PATH`.
+
+**Build:**
+```bash
+mmcli deploy build \
+  --project-path $CCS_PROJECT_PATH \
+  --ccs-path $CCS_INSTALL_PATH
+```
+
+**Flash:**
+```bash
+mmcli deploy flash \
+  --project-path $CCS_PROJECT_PATH \
+  --ccs-path $CCS_INSTALL_PATH
+```
+
+If any command fails, fall through to the runner.py steps below.
+
+---
+
+**Four scripted steps (runner.py fallback):**
 
 ### Step 13A: Verify artifacts exist
 ```bash
