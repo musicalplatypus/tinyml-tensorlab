@@ -176,7 +176,7 @@ def load_data(datadir, args, dataset_loader_dict, test_only=False):
     logger.info("Loading data")
     dataset_loader = dataset_loader_dict.get(args.dataset_loader)
     
-    st = timeit.default_timer()
+    st = timeit.default_timer() 
     if test_only:
         # datadir is supposed to be test dir
         if args.dataset == 'modelmaker':
@@ -571,10 +571,65 @@ def plot_residual_error_regression(ground_truth, predictions, output_dir, phase=
     logger.info(f"Residual plot saved at: {save_path}")
     plt.close(fig)
 
-
 def plot_reconstruction_errors(anomaly_errors, normal_test_errors,normal_data_mean, threshold,image_save_folder, bins=100,  log_scale=False):
-    plt.figure(figsize=(10, 6))
-    
+    font_size = 9.5
+    fig_width = 10
+    fig_height = 11
+    bullet_marker = "  \u2022 "   # prefix printed at the start of each bullet line
+    next_line     = "\n    "      # newline + indent for continuation lines within a bullet
+
+    bullet_texts = [
+        r"$\mathbf{Red}$ — Normal samples, $\mathbf{Blue}$ — Anomaly samples. A good model shows these two distributions" + next_line +
+        r"clearly separated.",
+
+        r"$\mathbf{Green\ line}$ — threshold that best balances catching anomalies vs. avoiding false alarms. Samples" + next_line +
+        r"with reconstruction error exceeding (right side of green line) the threshold will be flagged " + next_line +
+        r"as anomalies. If this line sits clearly between the two distributions, the model is ready for" + next_line +
+        r"deployment.",
+
+        r"$\mathbf{Orange\ line}$ — mean reconstruction error on training (Normal) data. Threshold is computed as" + next_line +
+        r"${threshold = \mu_{train} + k \cdot \sigma_{train}}$ where $k$ controls sensitivity (higher $k$ = fewer false alarms).",
+
+        "If the histograms overlap heavily, consider more training epochs, a larger model, different" + next_line +
+        "feature extraction settings, or check whether the anomaly samples in the test set are truly" + next_line +
+        "representative of real faults.",
+
+        r"For detailed per-threshold metrics (accuracy, precision, recall, F1, false positive rate) see" + next_line +
+        r"$\mathbf{threshold\_performance.csv}$ in the same folder.",
+
+        r"Refer to the $\mathbf{TinyML\ TensorLab\ User\ Guide}$ for guidance on selecting the final $k$-value and" + next_line +
+        r"deploying the threshold to the target device.",
+    ]
+    if log_scale:
+        bullet_texts.append(
+            r"$\mathbf{Log\ scale}$ — When error values are very small or the two distributions are close together," + next_line +
+            r"the linear plot may not show them clearly enough. This log-scale version makes those small" + next_line +
+            r"differences visible and reveals tail behaviour that the normal plot misses. Use both plots" + next_line +
+            r"together for a complete picture."
+        )
+    else:
+        bullet_texts.append(
+            "If either distribution looks very small, is barely visible, or the two bars overlap so heavily" + next_line +
+            "that it is hard to tell them apart, view reconstruction_error_log_scale.png for a better" + next_line +
+            "analysis. The log scale stretches small differences, makes compressed distributions easier to " + next_line +
+            "read, and can reveal structure that is hidden in this linear view."
+        )
+
+    # Build full text 
+    lines = ["How to read this plot:"]
+    for b in bullet_texts:
+        lines.append(bullet_marker + b)
+    full_text = "\n".join(lines)
+
+    # Compute bottom margin from exact line count
+    n_lines = full_text.count('\n') + 1
+    line_h_fig = (font_size * 1.4 / 72) / fig_height
+    xlabel_space = 0.07
+    bottom_margin = max(0.18, min(0.50, n_lines * line_h_fig + xlabel_space + 0.02))
+
+    plt.figure(figsize=(fig_width, fig_height))
+    plt.subplots_adjust(bottom=bottom_margin, top=0.93)
+
     plt.hist(anomaly_errors, bins, alpha=0.3, label="Anomaly", color='b')
     plt.hist(normal_test_errors, bins, alpha=0.3, label="Normal", color='r')
     
@@ -597,8 +652,11 @@ def plot_reconstruction_errors(anomaly_errors, normal_test_errors,normal_data_me
     plt.xlabel(f'Reconstruction Error{"(Log scale)" if log_scale else ""}', fontsize=14)
     plt.ylabel(f'Error count{"(Log scale)" if log_scale else ""}', fontsize=14)
     plt.legend(loc='upper right')
-    
-    plt.savefig(os.path.join(image_save_folder, f'reconstruction_error{"_log_scale" if log_scale else ""}.png'))
+
+    ax_pos = plt.gca().get_position()
+    plt.figtext(ax_pos.x0, bottom_margin - xlabel_space - 0.01, full_text,ha='left', va='top', fontsize=font_size, family='monospace',bbox=dict(boxstyle='round,pad=0.4', facecolor='white', alpha=0.9))
+
+    plt.savefig(os.path.join(image_save_folder, f'reconstruction_error{"_log_scale" if log_scale else ""}.png'), dpi=150, bbox_inches='tight')
     plt.close()
     
 class SmoothedValue:
@@ -824,15 +882,16 @@ def get_confusion_matrix(output, target, classes):
     Compute multi-class confusion matrix, a matrix of dimension num_classes x num_classes
     where each element at position (i,j) is the number of examples with true class i that were predicted to be class j.
     """
-    return multiclass_confusion_matrix(output, target, classes)
+    # torcheval builds sparse-COO tensors internally, which MPS does not support; compute on CPU.
+    return multiclass_confusion_matrix(output.cpu(), target.cpu(), classes)
 
 
 def get_f1_score(output, target, classes):
-    return multiclass_f1_score(output, target, num_classes=classes)
+    return multiclass_f1_score(output.cpu(), target.cpu(), num_classes=classes)
 
 
 def get_au_roc(output, target, classes):
-    return multiclass_auroc(output, target, num_classes=classes, average='macro')
+    return multiclass_auroc(output.cpu(), target.cpu(), num_classes=classes, average='macro')
 
 
 def get_r2_score(output,target):
@@ -1075,8 +1134,8 @@ def train_one_epoch_regression(model, criterion, optimizer, data_loader, device,
     for _, data, target in metric_logger.log_every(data_loader, print_freq, header):
     # for _, data, target in data_loader:
         start_time = timeit.default_timer()
-        data = data.to(device).float()
-        target = target.to(device).float()
+        data = data.float().to(device)
+        target = target.float().to(device)
         if transform:
             data = transform(data)
 
@@ -1124,8 +1183,8 @@ def train_one_epoch_forecasting(model, criterion, optimizer, data_loader, device
     
     for _, data, target in metric_logger.log_every(data_loader, print_freq, header):
         start_time = timeit.default_timer()
-        data = data.to(device).float()
-        target = target.to(device).float()
+        data = data.float().to(device)
+        target = target.float().to(device)
 
         # apply transform and model on whole batch directly on device
         # TODO: If transform is required
@@ -1173,8 +1232,8 @@ def evaluate_forecasting(model, criterion, data_loader, device, transform=None, 
     with torch.no_grad():
         for _, data, target in metric_logger.log_every(data_loader, print_freq, header):
             # Move data and target to the specified device
-            data = data.to(device, non_blocking=True).float()
-            target = target.to(device, non_blocking=True).float()
+            data = data.float().to(device, non_blocking=True)
+            target = target.float().to(device, non_blocking=True)
 
             # Apply transformation if provided
             if transform:
@@ -1249,8 +1308,8 @@ def evaluate_regression(model, criterion, data_loader, device, transform, log_su
         predictions_list = []
         # for _, data, target in metric_logger.log_every(data_loader, print_freq, header):
         for _, data, target in data_loader:
-            data = data.to(device, non_blocking=True).float()
-            target = target.to(device, non_blocking=True).float()
+            data = data.float().to(device, non_blocking=True)
+            target = target.float().to(device, non_blocking=True)
 
             if transform:
                 data = transform(data)
@@ -1294,7 +1353,7 @@ def train_one_epoch_anomalydetection(
     for _,data, labels in metric_logger.log_every(data_loader, print_freq, header):
         # for batch_idx, (data, target) in enumerate(data_loader):
         start_time = timeit.default_timer()
-        data = data.to(device).float()
+        data = data.float().to(device)
         #In anomlay detection with auto encoder, the target and the input data both are same. 
         target = data.clone()
 
@@ -1309,6 +1368,17 @@ def train_one_epoch_anomalydetection(
             output = model(data)  # (n,1,8000) -> (n,35)
 
         loss = criterion(output, target)
+
+        # Check for NaN/Inf loss (training instability)
+        if torch.isnan(loss) or torch.isinf(loss):
+            error_msg = (
+                f"Training encountered NaN/Inf loss at Epoch {epoch}. This indicates training instability.\n"
+                f"Common causes and fixes:\n"
+                f"  1. Learning rate might be too high, try reducing learning_rate\n"
+                f"  2. Batch size might be too large, try reducing batch_size\n"
+            )
+            logger.error(error_msg)
+            raise RuntimeError(error_msg)
 
         if not is_ptq:
             optimizer.zero_grad()
@@ -1336,7 +1406,7 @@ def evaluate_anomalydetection(
     with torch.no_grad():
         for _, data, labels in metric_logger.log_every(data_loader, print_freq, header):
             # for data, target in data_loader:
-            data = data.to(device, non_blocking=True).float()
+            data = data.float().to(device, non_blocking=True)
             #In anomlay detection with auto encoder, the target and the input data both are same. 
             target = data
             if transform:
@@ -1378,10 +1448,10 @@ def train_one_epoch_classification(
         # logger.info(batch_idx)
         start_time = timeit.default_timer()
         if nn_for_feature_extraction:
-            data = data_raw.to(device).float()
+            data = data_raw.float().to(device)
         else:
-            data = data_feat_ext.to(device).float()
-        target = target.to(device).long()
+            data = data_feat_ext.float().to(device)
+        target = target.long().to(device)
 
         # apply transform and model on whole batch directly on device
         # TODO: If transform is required
@@ -1432,11 +1502,11 @@ def evaluate_classification(model, criterion, data_loader, device, transform, lo
         for data_raw, data_feat_ext, target  in metric_logger.log_every(data_loader, print_freq, header):
             # for data, target in data_loader:
             if nn_for_feature_extraction:
-                data = data_raw.to(device, non_blocking=True).float()
+                data = data_raw.float().to(device, non_blocking=True)
             else:
-                data = data_feat_ext.to(device).float()
+                data = data_feat_ext.float().to(device)
 
-            target = target.to(device, non_blocking=True).long()
+            target = target.long().to(device, non_blocking=True)
             if transform:
                 data = transform(data)
 
@@ -1448,8 +1518,8 @@ def evaluate_classification(model, criterion, data_loader, device, transform, lo
             target_array = torch.cat((target_array, target))
             predictions_array = torch.cat((predictions_array, output))
 
-            loss = criterion(output.squeeze(), target)
-            acc1 = accuracy(output.squeeze(), target, topk=(1,))
+            loss = criterion(output, target)
+            acc1 = accuracy(output, target, topk=(1,))
             f1_score = get_f1_score(output, target, kwargs.get('num_classes'))
 
             confusion_matrix = get_confusion_matrix(output, target, kwargs.get('num_classes')).cpu().numpy()
@@ -1469,8 +1539,8 @@ def evaluate_classification(model, criterion, data_loader, device, transform, lo
     metric_logger.synchronize_between_processes()
 
     # logger.info(f'{header} Acc@1 {metric_logger.acc1.global_avg:.3f} Acc@5 {metric_logger.acc5.global_avg:.3f}')
-    logger.info(f'{header} Acc@1 {accuracy(predictions_array.squeeze(), target_array, topk=(1,))[0]:.3f}')
-    logger.info(f'{header} F1-Score {get_f1_score(predictions_array.squeeze(), target_array, kwargs.get("num_classes")):.3f}')
+    logger.info(f'{header} Acc@1 {accuracy(predictions_array, target_array, topk=(1,))[0]:.3f}')
+    logger.info(f'{header} F1-Score {get_f1_score(predictions_array, target_array, kwargs.get("num_classes")):.3f}')
     # auc = get_au_roc_from_conf_matrix(confusion_matrix_total)
     # logger.info('AU-ROC Score: {:.3f}'.format(auc))
     auc = get_au_roc(predictions_array, target_array, kwargs.get('num_classes'))
@@ -1693,18 +1763,23 @@ def init_lr_scheduler(
     return lr_scheduler
 
 
-def quantization_wrapped_model(model, quantization=0, quantization_method='QAT', weight_bitwidth=8, activation_bitwidth=8, epochs=10, output_int=True, partial_quantization = False):
+def quantization_wrapped_model(model, quantization=0, quantization_method='QAT', weight_bitwidth=8, activation_bitwidth=8, epochs=10, output_int=True, auto_quantization=True, inputs=None, targets=None, criterion=None,
+                               calibration_dataloader=None, eval_dataloader=None, task_type=None, float_metric=None, example_inputs=None, **kwargs):
     logger = getLogger('root.utils.quantization_wrapped_model')
+    qconfig_kwargs = dict(inputs=inputs, targets=targets, criterion=criterion,
+                          calibration_dataloader=calibration_dataloader, eval_dataloader=eval_dataloader,
+                          task_type=task_type, float_metric=float_metric, example_inputs=example_inputs,
+                          **kwargs)
     if quantization == TinyMLQuantizationVersion.QUANTIZATION_GENERIC:
         if quantization_method == TinyMLQuantizationMethod.QAT:
-            model = GenericTinyMLQATFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, partial_quantization).qconfig_type, total_epochs=epochs)
+            model = GenericTinyMLQATFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, auto_quantization, **qconfig_kwargs).qconfig_type, total_epochs=epochs)
         if quantization_method == TinyMLQuantizationMethod.PTQ:
-            model = GenericTinyMLPTQFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, partial_quantization).qconfig_type, total_epochs=epochs)
+            model = GenericTinyMLPTQFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, auto_quantization, **qconfig_kwargs).qconfig_type, total_epochs=epochs)
     elif quantization == TinyMLQuantizationVersion.QUANTIZATION_TINPU:
         if quantization_method == TinyMLQuantizationMethod.QAT:
-            model = TINPUTinyMLQATFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, partial_quantization).qconfig_type, total_epochs=epochs, output_int=output_int)
+            model = TINPUTinyMLQATFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, auto_quantization, **qconfig_kwargs).qconfig_type, total_epochs=epochs, output_int=output_int)
         if quantization_method == TinyMLQuantizationMethod.PTQ:
-            model = TINPUTinyMLPTQFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, partial_quantization).qconfig_type, total_epochs=epochs, output_int=output_int)
+            model = TINPUTinyMLPTQFxModule(model, qconfig_type=TinyMLQConfigType(weight_bitwidth, activation_bitwidth, auto_quantization, **qconfig_kwargs).qconfig_type, total_epochs=epochs, output_int=output_int)
     if quantization:
         logger.info(f"Proceeding with {quantization_method} quantization")
     return model
@@ -1724,8 +1799,8 @@ def get_trained_feature_extraction_model(model, args, data_loader, data_loader_t
         for data_raw, data_fe, _ in data_loader:
             start_time = timeit.default_timer()
 
-            data_raw = data_raw.to(device).float()
-            data_fe = data_fe.to(device).float()
+            data_raw = data_raw.float().to(device)
+            data_fe = data_fe.float().to(device)
 
             output = model(data_raw)  # (n,1,8000) -> (n,35)
 
@@ -1751,8 +1826,8 @@ def get_trained_feature_extraction_model(model, args, data_loader, data_loader_t
         with torch.no_grad():
             for data_raw, data_fe, _ in data_loader_test:
                 # Assuming the dataset returns (data, target)
-                data_raw = data_raw.to(device).float()
-                data_fe = data_fe.to(device).float()
+                data_raw = data_raw.float().to(device)
+                data_fe = data_fe.float().to(device)
                 outputs = model(data_raw)
 
                 # Calculate loss

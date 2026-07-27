@@ -64,8 +64,12 @@ The Tiny ML framework supports the following task categories:
 - **AM261** - Single-core Arm Cortex-R5F MCU up to 400 MHz
 
 ### Connectivity Devices (Wireless)
-- **CC2755** - 96 MHz Arm Cortex-M33 wireless MCU with NPU
-- **CC1352** - Arm Cortex-M4 wireless MCU for sub-1GHz and 2.4GHz
+- **CC2755** - 96 MHz Arm Cortex-M33 2.4 GHz wireless MCU with CDE (Custom Datapath Extension)
+- **CC1312** - Arm Cortex-M4F sub-1 GHz wireless MCU
+- **CC1314** - Arm Cortex-M33 sub-1 GHz wireless MCU
+- **CC1352** - Arm Cortex-M4F sub-1 GHz wireless MCU
+- **CC1354** - Arm Cortex-M33 sub-1 GHz wireless MCU
+- **CC35X1** - Arm Cortex-M33 Wi-Fi wireless MCU with CDE (Custom Datapath Extension)
 
 ---
 
@@ -76,9 +80,9 @@ The Tiny ML framework supports the following task categories:
 | Task / Application | Supported Devices | Example Projects |
 |-------------------|-------------------|-----------------|
 | **Arc Fault Detection** | F280013, F280015, F28003, F28004, F2837, F28P55, F28P65, F29H85, F29P58, F29P32, MSPM0G3507, MSPM0G5187, MSPM33C32, MSPM33C34, AM13E2, AM263, AM263P, AM261 | `ac_arc_fault`, `dc_arc_fault` |
-| **Motor Fault Detection** | F280013, F280015, F28003, F28004, F2837, F28P55, F28P65, F29H85, F29P58, F29P32, MSPM0G3507, MSPM0G5187, MSPM33C32, MSPM33C34, AM13E2, AM263, AM263P, AM261 | `motor_bearing_fault`, `fan_blade_fault_classification`, `blower_imbalance` |
+| **Motor Fault Detection** | F280013, F280015, F28003, F28004, F2837, F28P55, F28P65, F29H85, F29P58, F29P32, MSPM0G3507, MSPM0G5187, MSPM33C32, MSPM33C34, AM13E2, AM263, AM263P, AM261, CC2755, CC1312, CC1314, CC1352, CC1354, CC35X1 | `motor_bearing_fault`, `fan_blade_fault_classification`, `blower_imbalance` |
 | **Blower Imbalance Detection** | F280013, F280015, F28003, F28004, F2837, F28P55, F28P65, F29H85, F29P58, F29P32, MSPM33C32, MSPM33C34, AM13E2, AM263, AM263P, AM261 | `blower_imbalance` |
-| **PIR Detection** | CC2755, CC1352 | `pir_detection` |
+| **PIR Detection** | CC2755, CC1312, CC1352, CC1314, CC1354, CC35X1 | `pir_detection` |
 | **Generic Timeseries Classification** | F280013, F280015, F28003, F28004, F2837, F28P55, F28P65, F29H85, F29P58, F29P32, MSPM0G3507, MSPM0G5187, MSPM33C32, MSPM33C34, AM13E2, CC2755, CC1352, AM263, AM263P, AM261 | `hello_world`, `ecg_classification`, `electrical_fault`, `gas_sensor`, `grid_stability`, `nilm_appliance_usage_classification`, `PLAID_nilm_classification`, `branched_model_parameters` |
 | **Generic Timeseries Regression** | F280013, F280015, F28003, F28004, F2837, F28P55, F28P65, F29H85, F29P58, F29P32, MSPM33C32, MSPM33C34, AM13E2, CC2755, CC1352, AM263, AM263P, AM261 | `induction_motor_speed_prediction`, `reg_washing_machine`, `torque_measurement_regression` |
 | **Generic Timeseries Anomaly Detection** | F280013, F280015, F28003, F28004, F2837, F28P55, F28P65, F29H85, F29P58, F29P32, MSPM33C32, MSPM33C34, AM13E2, CC2755, CC1352, AM263, AM263P, AM261 | `dc_arc_fault_anomaly_detection`, `motor_bearing_fault_anomaly_detection`, `fan_blade_anomaly_detection`, `ecg_anomaly_detection` |
@@ -97,7 +101,12 @@ The Tiny ML framework supports the following task categories:
 | **MSPM33C34** | ✅ | Arc Fault, Motor Fault, Blower Imbalance | ✅ (Hard) |
 | **AM13E2** | ✅ | Arc Fault, Motor Fault, Blower Imbalance | ❌ (Soft) |
 | **AM26x Series** | ✅ | Arc Fault, Motor Fault, Blower Imbalance | ❌ |
-| **CC2755/CC1352** | ✅ | PIR Detection | Soft NPU |
+| **CC2755** | ❌ | PIR Detection, Motor Fault | ✅ (CDE) |
+| **CC1312** | ❌ | PIR Detection, Motor Fault | ❌ (Soft) |
+| **CC1314** | ❌ | PIR Detection, Motor Fault | ❌ (Soft) |
+| **CC1352** | ❌ | PIR Detection, Motor Fault | ❌ (Soft) |
+| **CC1354** | ❌ | PIR Detection, Motor Fault | ❌ (Soft) |
+| **CC35X1** | ❌ | PIR Detection, Motor Fault | ✅ (CDE) |
 
 ---
 
@@ -134,10 +143,10 @@ These devices support **all** timeseries tasks (classification, regression, anom
   - Note: Limited to classification tasks due to memory constraints
 
 #### Wireless/Connectivity Devices
-- **CC2755, CC1352**
+- **CC2755, CC1312, CC1314, CC1352, CC1354, CC35X1**
   - Generic Tasks: Classification, Regression, Anomaly Detection, Forecasting
-  - Specialized: PIR Detection
-  - Compilation: Soft NPU
+  - Specialized: PIR Detection (CC2755, CC1312, CC1352, CC1354, CC35X1), Motor Fault (all)
+  - Compilation: CDE/Soft NPU
   - Note: Optimized for wireless/connectivity applications
 
 ---
@@ -154,14 +163,18 @@ These devices support **all** timeseries tasks (classification, regression, anom
 - Pattern recognition in sensor data
 
 **Available Models:**
-- TimeSeries_Generic_13k_t (13K parameters)
-- TimeSeries_Generic_6k_t (6K parameters)
-- TimeSeries_Generic_4k_t (4K parameters)
-- TimeSeries_Generic_1k_t (1K parameters)
-- TimeSeries_Generic_100_t (100 parameters)
-- TimeSeries_Generic_55k_t (55K parameters)
-- Res_Add_TimeSeries_Generic_3k_t (Residual addition, 3K parameters)
-- Res_Cat_TimeSeries_Generic_3k_t (Residual concatenation, 3K parameters)
+- CLS_100_NPU (100 parameters)
+- CLS_500_NPU (500 parameters)
+- CLS_1k_NPU (1K parameters)
+- CLS_2k_NPU (2K parameters)
+- CLS_4k_NPU (4K parameters)
+- CLS_6k_NPU (6K parameters)
+- CLS_8k_NPU (8K parameters)
+- CLS_13k_NPU (13K parameters)
+- CLS_20k_NPU (20K parameters)
+- CLS_55k_NPU (55K parameters)
+- CLS_ResAdd_3k (Residual addition, 3K parameters)
+- CLS_ResCat_3k (Residual concatenation, 3K parameters)
 
 **Key Features:**
 - Multiple model sizes for different memory constraints
@@ -180,11 +193,17 @@ These devices support **all** timeseries tasks (classification, regression, anom
 - Sensor calibration
 
 **Available Models:**
-- TimeSeries_Generic_Regr_13k_t (13K parameters, CNN-based)
-- TimeSeries_Generic_Regr_10k_t (10K parameters)
-- TimeSeries_Generic_Regr_4k_t (4K parameters, CNN-based)
-- TimeSeries_Generic_Regr_3k_t (3K parameters, MLP-based)
-- TimeSeries_Generic_Regr_1k_t (1K parameters)
+- REGR_1k (1K parameters)
+- REGR_2k (2K parameters)
+- REGR_3k (3K parameters, MLP-based)
+- REGR_4k (4K parameters, CNN-based)
+- REGR_10k (10K parameters)
+- REGR_13k (13K parameters, CNN-based)
+- REGR_500_NPU (500 parameters, NPU)
+- REGR_2k_NPU (2K parameters, NPU)
+- REGR_6k_NPU (6K parameters, NPU)
+- REGR_8k_NPU (8K parameters, NPU)
+- REGR_20k_NPU (20K parameters, NPU)
 
 **Key Features:**
 - Multiple architectures (CNN, MLP)
@@ -203,12 +222,18 @@ These devices support **all** timeseries tasks (classification, regression, anom
 - Security monitoring
 
 **Available Models:**
-- TimeSeries_Generic_AD_17k_t (17K parameters)
-- TimeSeries_Generic_AD_16k_t (16K parameters)
-- TimeSeries_Generic_AD_4k_t (4K parameters)
-- TimeSeries_Generic_AD_1k_t (1K parameters)
-- TimeSeries_Generic_Linear_AD (Linear model)
-- Ondevice_Trainable_TimeSeries_Generic_Linear_AD (On-device trainable)
+- AD_1k (1K parameters)
+- AD_4k (4K parameters)
+- AD_16k (16K parameters)
+- AD_17k (17K parameters)
+- AD_Linear (Linear model)
+- AD_500_NPU (500 parameters, NPU)
+- AD_2k_NPU (2K parameters, NPU)
+- AD_6k_NPU (6K parameters, NPU)
+- AD_8k_NPU (8K parameters, NPU)
+- AD_10k_NPU (10K parameters, NPU)
+- AD_20k_NPU (20K parameters, NPU)
+- Ondevice_Trainable_AD_Linear (On-device trainable)
 
 **Key Features:**
 - Unsupervised and semi-supervised approaches
@@ -227,10 +252,18 @@ These devices support **all** timeseries tasks (classification, regression, anom
 - Trend prediction
 
 **Available Models:**
-- TimeSeries_Generic_Forecasting_13k_t (13K parameters, CNN-based)
-- TimeSeries_Generic_Forecasting_3k_t (3K parameters, MLP-based)
-- TimeSeries_Generic_Forecasting_LSTM10 (LSTM with hidden size 10)
-- TimeSeries_Generic_Forecasting_LSTM8 (LSTM with hidden size 8)
+- FCST_3k (3K parameters, MLP-based)
+- FCST_13k (13K parameters, CNN-based)
+- FCST_LSTM8 (LSTM with hidden size 8)
+- FCST_LSTM10 (LSTM with hidden size 10)
+- FCST_500_NPU (500 parameters, NPU)
+- FCST_1k_NPU (1K parameters, NPU)
+- FCST_2k_NPU (2K parameters, NPU)
+- FCST_4k_NPU (4K parameters, NPU)
+- FCST_6k_NPU (6K parameters, NPU)
+- FCST_8k_NPU (8K parameters, NPU)
+- FCST_10k_NPU (10K parameters, NPU)
+- FCST_20k_NPU (20K parameters, NPU)
 
 **Key Features:**
 - Multiple forecasting horizons
@@ -302,7 +335,7 @@ These devices support **all** timeseries tasks (classification, regression, anom
 **Available Models:**
 - PIRDetection_model_1_t
 
-**Supported Devices:** CC2755, CC1352 (wireless connectivity devices)
+**Supported Devices:** CC2755, CC1312, CC1352, CC1354, CC35X1 (wireless connectivity devices)
 
 ---
 
@@ -469,7 +502,7 @@ The Tiny ML ecosystem includes comprehensive example projects demonstrating vari
 - **Task Type:** Generic Timeseries Regression
 - **Description:** Washing machine parameter regression for smart control
 - **Use Case:** Smart home appliances, energy optimization
-- **Recommended Devices:** MSPM33C32, CC2755 (connectivity-enabled devices)
+- **Recommended Devices:** MSPM33C32
 - **Key Features:** Multi-parameter regression, appliance optimization
 
 #### torque_measurement_regression
@@ -492,7 +525,7 @@ The Tiny ML ecosystem includes comprehensive example projects demonstrating vari
 - **Task Type:** Generic Timeseries Forecasting
 - **Description:** HVAC indoor temperature forecasting for predictive climate control
 - **Use Case:** Smart buildings, energy-efficient HVAC systems
-- **Recommended Devices:** MSPM33C32, AM263P, CC2755
+- **Recommended Devices:** MSPM33C32, AM263P
 - **Key Features:** Multi-variate forecasting, energy optimization
 
 ### Timeseries Anomaly Detection Examples
@@ -535,7 +568,7 @@ The Tiny ML ecosystem includes comprehensive example projects demonstrating vari
 - **Task Type:** PIR Detection
 - **Description:** Passive Infrared (PIR) sensor-based motion and presence detection
 - **Use Case:** Occupancy sensing, security systems, smart lighting
-- **Recommended Devices:** CC2755, CC1352 (wireless connectivity devices)
+- **Recommended Devices:** CC2755, CC1312, CC1352, CC1354, CC35X1 (wireless connectivity devices)
 - **Key Features:** Low-power operation, wireless reporting, edge AI inference
 
 ### Image Classification Examples
