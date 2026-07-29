@@ -5,11 +5,13 @@ on:
     branches: [platypus_dev_1.3, main]
     paths:
       - 'tinyml-modelmaker/**'
+      - 'tinyml-tinyverse/**'
       - '.github/workflows/test-modelmaker.yml'
   pull_request:
     branches: [platypus_dev_1.3, main]
     paths:
       - 'tinyml-modelmaker/**'
+      - 'tinyml-tinyverse/**'
   workflow_dispatch:  # manual trigger
 
 jobs:
@@ -73,3 +75,7 @@ jobs:
       - name: Tier 2 — Pipeline Smoke Tests
         working-directory: tinyml-modelmaker
         run: python -m pytest tests/test_pipeline_smoke.py -v --tb=short
+
+      - name: tinyml-tinyverse Tests
+        working-directory: tinyml-tinyverse
+        run: python -m pytest tests/ -v --tb=short
