@@ -1100,9 +1100,16 @@ class BaseGenericTSDataset(Dataset):
                 self.logger.warning(f"File will be skipped due to an error: {datafile} : {v}")
             except IndexError as i:
                 self.logger.error(f"Unexpected dataset dimensions. Check input options or dataset content. \nFile: {datafile}. Error message: {i}")
-                exit()
+                # exit() with no argument raises SystemExit(None), which the interpreter
+                # reports as status 0 — so this failure was indistinguishable from a
+                # successful run to anything checking the exit code. An entire task type
+                # (generic_timeseries_regression) exited 0 having written no model at all,
+                # and every caller recorded it as a success. Fail loudly instead.
+                exit(1)
             except KeyboardInterrupt:
-                exit()
+                # Likewise, a cancelled run must not report success.
+                # 130 is the conventional status for termination by SIGINT.
+                exit(130)
 
         try:
             if not self.X.shape[0]:
@@ -1744,9 +1751,16 @@ class GenericTSDatasetForecasting(BaseGenericTSDataset):
                 self.logger.warning(f"File will be skipped due to an error: {datafile} : {v}")
             except IndexError as i:
                 self.logger.error(f"Unexpected dataset dimensions. Check input options or dataset content. \nFile: {datafile}. Error message: {i}")
-                exit()
+                # exit() with no argument raises SystemExit(None), which the interpreter
+                # reports as status 0 — so this failure was indistinguishable from a
+                # successful run to anything checking the exit code. An entire task type
+                # (generic_timeseries_regression) exited 0 having written no model at all,
+                # and every caller recorded it as a success. Fail loudly instead.
+                exit(1)
             except KeyboardInterrupt:
-                exit()
+                # Likewise, a cancelled run must not report success.
+                # 130 is the conventional status for termination by SIGINT.
+                exit(130)
 
         if not self.X.shape[0]:
             self.logger.error("Aborting run as the dataset loaded is empty. Check either input options or data or compatibility between the two.")
