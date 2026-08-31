@@ -305,3 +305,27 @@ Trigger: an independent analysis of `apply_hardware_defaults` (`ANALYSIS-cuda-au
 Rather than special-case the YAML-path branch inside `apply_hardware_defaults` under time pressure, the safer immediate fix is to stop calling it from radar/vision/audio (which never had this wiring before this plan) and leave `timeseries` — which predates this plan and whose existing behavior is out of scope here — untouched. This is a strict revert to pre-plan behavior for these three modules' hardware-default handling; the rest of this plan's deliverable (the `compile_model` field and argv wiring) is retained and unaffected. A regression test per module (`test_compile_model_not_auto_enabled_on_cuda`) now guards against silently re-wiring `apply_hardware_defaults` back in without addressing F-1 first.
 
 If `apply_hardware_defaults` is later fixed to correctly introspect YAML-path configs (not just dict configs) for their explicitly-set keys, re-auto-enabling for radar/vision/audio can be reconsidered — the reasoning in the superseded decision above about long-run compile amortization still stands on its own merits, independent of the bug that forced this reversal.
+
+**Addendum (2026-08-31): real GX10 CUDA measurements for F-2 and F-5, on `timeseries` specifically.** The independent analysis's F-2 (numerical non-reproducibility from `native_amp`) and F-5 (auto-compile blind to run length) were explicitly marked "not verified: no CUDA host" — GX10 (`NVIDIA GB10`, torch 2.9.0+cu130) became available for testing, closing that gap for the one module (`timeseries`) where `apply_hardware_defaults` is still live.
+
+Methodology: `timeseries_classification`, `CLS_1k_NPU` (smallest classification model, matching the existing `test_pipeline_smoke.py` synthetic fixture — 90 files, 3 classes, non-separable random data), driven through the full `run_tinyml_modelmaker.main(config)` pipeline, quantization disabled. Each measurement is its own fresh Python process — an initial same-process sweep gave inconsistent numbers (a 10-epoch run came back faster than a 1-epoch run) traced to CUDA-context/`torch.compile`-cache persistence across in-process runs; per-process isolation fixed this.
+
+**F-5, confirmed and sharper than the radar/image/audio analogy suggested:** 1-epoch vs 10-epoch differential (`timeseries`'s own default `training_epochs`), n=3 repeats each, `inductor` backend:
+
+| | 1 epoch | 10 epochs | steady-state/epoch |
+|---|---|---|---|
+| no compile | 2.067s | 2.289s | 0.0246s |
+| `inductor` | 3.375s | 3.595s | 0.0244s |
+
+One-time compile warmup: 1.31s, consistent across repeats. Steady-state per-epoch cost is statistically identical with or without compile (0.0246 vs 0.0244s) — no speedup once warmed up, for this model. At `timeseries`'s own default of 10 epochs, that's a measured **+57% wall-clock regression** with nothing earned back — unlike radar/image/audio's short-run finding (a loss that a *longer* run would eventually amortize), this model shows no steady-state benefit to amortize toward at all. Caveat: one small synthetic model — not re-checked against a larger, more compute-bound `timeseries` model.
+
+**F-2, confirmed, small but real and deterministic:** same seed (42), same data, `native_amp` as the only variable, n=2 repeats each:
+
+```
+native_amp=0: epoch0 loss=0.9943, epoch9 loss=1.0216   (identical across both repeats)
+native_amp=1: epoch0 loss=0.9944, epoch9 loss=1.0215   (identical across both repeats)
+```
+
+The ~1e-4 divergence appears from epoch 0, is perfectly reproducible within each setting, and only differs between settings — i.e. it's `native_amp` changing the arithmetic, not run-to-run noise. At this scale it didn't move final rounded Acc@1/F1, but this run did not test F-2's specific worry (AMP's effect compounding through auto-quantization) — quantization was disabled for this measurement; that interaction remains unverified.
+
+**Disposition:** recorded as evidence, not acted on. F-5's number is a real, direct problem for `timeseries`'s own default config, not just an abstract risk — but this is one small synthetic model on one GPU, and a policy change (reverting `timeseries`'s auto-enable, matching radar/vision/audio) was explicitly deferred pending a broader benchmark rather than made off a single model's numbers.
