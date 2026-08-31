@@ -56,8 +56,15 @@ class ConfigDict(dict):
         # isn't a dict/ConfigDict.
         for value in args:
             if isinstance(value, str):
-                settings_file = value
+                path = value
                 value = self.resolve_config_value(value)
+                # Only adopt this arg's path as settings_file if it's the
+                # one actually supplying include_files -- otherwise a later
+                # path-only arg with no include_files of its own would
+                # clobber the correct base path from an earlier source.
+                if isinstance(value, dict) and 'include_files' in value:
+                    settings_file = path
+                #
             #
             if isinstance(value, (dict, ConfigDict)):
                 self._deep_merge(input_dict, value)

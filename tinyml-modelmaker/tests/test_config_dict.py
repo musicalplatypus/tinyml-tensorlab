@@ -68,3 +68,28 @@ class TestConfigDict:
         bad_file.write_text("a: 1")
         with pytest.raises(ValueError, match="unrecognized file type"):
             ConfigDict(default, str(bad_file))
+
+    def test_include_files_resolves_against_the_arg_that_defines_it(self, tmp_path):
+        """Regression test (CodeRabbit finding): when multiple positional
+        .yaml-path args are passed and only an EARLIER one defines
+        include_files, settings_file must not be clobbered by a LATER
+        path-only arg that has no include_files of its own -- otherwise
+        the relative include path resolves against the wrong directory.
+        """
+        dir_a = tmp_path / "dir_a"
+        dir_a.mkdir()
+        (dir_a / "shared.yaml").write_text(yaml.dump({"from_shared": 42}))
+        config_a = dir_a / "config_a.yaml"
+        config_a.write_text(yaml.dump({"include_files": ["shared.yaml"]}))
+
+        dir_b = tmp_path / "dir_b"
+        dir_b.mkdir()
+        config_b = dir_b / "config_b.yaml"
+        config_b.write_text(yaml.dump({"unrelated": True}))
+
+        cfg = ConfigDict({}, str(config_a), str(config_b))
+        assert cfg.from_shared == 42, (
+            "include_files from config_a should resolve relative to dir_a "
+            "even though config_b (no include_files) was passed after it"
+        )
+        assert cfg.unrelated is True

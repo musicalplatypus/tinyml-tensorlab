@@ -115,3 +115,16 @@ def test_init_params_does_not_crash_on_none_first_arg():
         params = init_params(None)
     assert params.training.compile_model == 1
     assert params.training.native_amp is True
+
+
+def test_init_params_respects_explicit_settings_passed_via_kwargs():
+    """Regression test (CodeRabbit finding): ConfigDict's constructor also
+    accepts explicit settings via **kwargs (`input_dict[key] = value` in
+    ConfigDict.__init__), not just positional args -- explicit_training_keys
+    must inspect kwargs too, or a caller using this documented call shape
+    would have its explicit compile_model/native_amp silently overridden."""
+    from tinyml_modelmaker.ai_modules.timeseries.params import init_params
+    with patch('torch.cuda.is_available', return_value=True):
+        params = init_params(training=dict(model_name="kwarg_model", compile_model=0, native_amp=False))
+    assert params.training.compile_model == 0
+    assert params.training.native_amp is False

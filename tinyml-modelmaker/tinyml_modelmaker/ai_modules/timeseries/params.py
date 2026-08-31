@@ -223,7 +223,7 @@ def init_params(*args, **kwargs):
         ),
     )
 
-    user_training_keys = explicit_training_keys(*args)
+    user_training_keys = explicit_training_keys(*args, kwargs)
     params = utils.ConfigDict(default_params, *args, **kwargs)
     apply_hardware_defaults(params, user_training_keys)
     return params
