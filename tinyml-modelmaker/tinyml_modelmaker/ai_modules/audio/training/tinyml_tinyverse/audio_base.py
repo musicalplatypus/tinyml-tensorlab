@@ -348,7 +348,6 @@ class BaseAudioModelTraining:
             '--fb-context-ms', f'{self.params.data_processing_feature_extraction.fb_context_ms}',
             '--input-bit-depth', f'{self.params.data_processing_feature_extraction.input_bit_depth}',
 
-            '--feat-ext-transform', self.params.data_processing_feature_extraction.feat_ext_transform,
             '--frame-size', f'{self.params.data_processing_feature_extraction.frame_size}',
             '--feature-size-per-frame', f'{self.params.data_processing_feature_extraction.feature_size_per_frame}',
             '--num-frame-concat', f'{self.params.data_processing_feature_extraction.num_frame_concat}',
@@ -407,7 +406,6 @@ class BaseAudioModelTraining:
 
             '--input-bit-depth', f'{self.params.data_processing_feature_extraction.input_bit_depth}',
 
-            '--feat-ext-transform', self.params.data_processing_feature_extraction.feat_ext_transform,
             '--frame-size', f'{self.params.data_processing_feature_extraction.frame_size}',
             '--feature-size-per-frame', f'{self.params.data_processing_feature_extraction.feature_size_per_frame}',
             '--num-frame-concat', f'{self.params.data_processing_feature_extraction.num_frame_concat}',
