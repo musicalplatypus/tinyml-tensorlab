@@ -16,107 +16,7 @@ Bring your own data (BYOD): Retrain models from TI Model Zoo to fine-tune with y
 ## Supported target devices
 These are the devices that are supported currently. As additional devices are supported, this section will be updated.
 
-### F28P55
-* Product information: https://www.ti.com/product/TMS320F28P550SJ
-* Launchpad: https://www.ti.com/tool/LAUNCHXL-F28P55X
-* C2000 SDK: https://www.ti.com/tool/C2000WARE
-* SDK release: 26_00_00
-
-### F28P65
-* Product information: https://www.ti.com/product/TMS320F28P650DK
-* Launchpad: https://www.ti.com/tool/LAUNCHXL-F28P65X
-* C2000 SDK: https://www.ti.com/tool/C2000WARE
-* SDK release: 26_00_00
-
-### F2837
-* Product information: https://www.ti.com/product/TMS320F28377D
-* Launchpad: https://www.ti.com/tool/LAUNCHXL-F28379D
-* C2000 SDK: https://www.ti.com/tool/C2000WARE
-* SDK release: 26_00_00
-
-### F28004
-* Product information: https://www.ti.com/product/TMS320F280049C
-* Launchpad: https://www.ti.com/tool/LAUNCHXL-F280049C
-* C2000 SDK: https://www.ti.com/tool/C2000WARE
-* SDK release: 26_00_00
-
-### F28003
-* Product information: https://www.ti.com/product/TMS320F280039C
-* Launchpad: https://www.ti.com/tool/LAUNCHXL-F280039C
-* C2000 SDK: https://www.ti.com/tool/C2000WARE
-* SDK release: 26_00_00
-
-### F280013
-* Product information: https://www.ti.com/product/TMS320F2800137
-* Launchpad: https://www.ti.com/tool/LAUNCHXL-F2800137
-* C2000 SDK: https://www.ti.com/tool/C2000WARE
-* SDK release: 26_00_00
-
-### F280015
-* Product information: https://www.ti.com/product/TMS320F2800157
-* Launchpad: https://www.ti.com/tool/LAUNCHXL-F2800157
-* C2000 SDK: https://www.ti.com/tool/C2000WARE
-* SDK release: 26_00_00
-
-### MSPM0G3507
-* Product information: https://www.ti.com/product/MSPM0G3507
-* Launchpad: https://www.ti.com/tool/LP-MSPM0G3507
-* MSPM0 SDK: https://www.ti.com/tool/MSPM0-SDK
-* SDK release: 2_11_00_xx
-
-### MSPM0G3519
-* Product information: https://www.ti.com/product/MSPM0G3519
-* Launchpad: https://www.ti.com/tool/LP-MSPM0G3519
-* MSPM0 SDK: https://www.ti.com/tool/MSPM0-SDK
-* SDK release: 2_11_00_xx
-
-### MSPM0G5187
-* Product information: https://www.ti.com/product/MSPM0G5187
-* Launchpad: https://www.ti.com/tool/LP-MSPM0G5187
-* MSPM0 SDK: https://www.ti.com/tool/MSPM0-SDK
-* SDK release: 2_11_00_xx
-
-### CC2755
-* Product information: https://www.ti.com/product/CC2755R10
-* Launchpad: https://www.ti.com/tool/LP-EM-CC2745R10-Q1
-* Plugin SDK: https://www.ti.com/tool/download/SIMPLELINK-SDK-EDGEAI-PLUGIN
-* CC2755 SDK: https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F3-SDK/9.20.00.81
-* SDK release: 01_10_00_00
-
-### CC1352
-* Product information: https://www.ti.com/product/CC1352R
-* Launchpad: https://www.ti.com/tool/LAUNCHXL-CC1352R1
-* Plugin SDK: https://www.ti.com/tool/download/SIMPLELINK-SDK-EDGEAI-PLUGIN
-* CC1352 SDK: https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F2-SDK/8.33.00.16
-* SDK release: 01_10_00_00
-
-### CC1312
-* Product information: https://www.ti.com/product/CC1312PSIP
-* Launchpad: https://www.ti.com/tool/LP-EM-CC1312PSIP
-* Plugin SDK: https://www.ti.com/tool/download/SIMPLELINK-SDK-EDGEAI-PLUGIN
-* CC1312 SDK: https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F2-SDK/8.33.00.16
-* SDK release: 01_10_00_00
-
-### CC1354
-* Product information: https://www.ti.com/product/CC1354P10
-* Launchpad: https://www.ti.com/tool/LP-EM-CC1354P10
-* Plugin SDK: https://www.ti.com/tool/download/SIMPLELINK-SDK-EDGEAI-PLUGIN
-* CC1354 SDK: https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F2-SDK/8.33.00.16
-* SDK release: 01_10_00_00
-
-### CC1314
-* Product information: https://www.ti.com/product/CC1314R10
-* Launchpad: https://www.ti.com/tool/LP-EM-CC1314R10
-
-* CC1314 SDK: https://www.ti.com/tool/download/SIMPLELINK-LOWPOWER-F2-SDK/8.33.00.16
-* SDK release: 01_10_00_00
-
-### CC35X1
-* Product information: https://www.ti.com/product/CC3551E
-* Launchpad: https://www.ti.com/tool/LP-EM-CC35X1
-* Plugin SDK: https://www.ti.com/tool/download/SIMPLELINK-SDK-EDGEAI-PLUGIN
-* CC35X1 SDK: https://www.ti.com/tool/download/SIMPLELINK-WIFI-SDK/10.10.01.08
-* SDK release: 01_10_00_00
+Supported devices: F280013, F28E12, F280015, F28003, F28004, F2837, F28P55, F28P65, MSPM0G3507, MSPM0G3519, MSPM0G5187, MSPM33C32, F29H85, F29P58, F29P32, F2807x, F28002x, F28P551x, F2837xS, F2838x, CC2755, CC2745, CC1352, CC1312, CC1354, CC1314, CC35X1, AM263, AM263P, AM261, AM13E2
 
 
 ## Additional information
@@ -173,6 +73,10 @@ Learning Rate determines the step size used by the optimization algorithm at eac
 Batch size specifies the number of inputs that are propagated through the neural network in one iteration. Several such iterations make up one Epoch.Higher batch size require higher memory and too low batch size can typically impact the accuracy.
 #### Weight decay
 Weight decay is a regularization technique that can improve stability and generalization of a machine learning algorithm. It is typically done using L2 regularization that penalizes parameters (weights, biases) according to their L2 norm.
+#### Early Stopping
+Stop training automatically once the validation metric stops improving. This helps avoid overfitting and can reduce unnecessary training time.
+#### Early Stopping Patience
+Number of epochs with no improvement before stopping early. It is a hyper parameter that can be tuned along with Early Stopping.
 ### COMPILATION
 #### Preset Name
 Two presets exist: "default_preset"(Recommended Option), "forced_soft_npu_preset"(Only available on HW-NPU devices to disable HW NPU), 
