@@ -1,0 +1,568 @@
+#################################################################################
+# Copyright (c) 2023-2026, Texas Instruments
+# All Rights Reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# * Redistributions of source code must retain the above copyright notice, this
+#   list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright notice,
+#   this list of conditions and the following disclaimer in the documentation
+#   and/or other materials provided with the distribution.
+#
+# * Neither the name of the copyright holder nor the names of its
+#   contributors may be used to endorse or promote products derived from
+#   this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#################################################################################
+
+import os
+import shutil
+from copy import deepcopy
+
+import torch.backends.mps
+
+from tinyml_torchmodelopt.quantization import TinyMLQuantizationVersion
+
+import tinyml_modelmaker
+
+from ..... import utils
+from ... import constants
+
+def get_radar_base_log_summary_regex():
+    return {
+        'js': [
+            # Floating Point Training
+            {'type': 'Epoch (FloatTrain)', 'name': 'Epoch (FloatTrain)', 'description': 'Epochs (FloatTrain)',
+             'unit': 'Epoch', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'FloatTrain: Epoch:\s+\[(?<eid>\d+)\]\s+Total',
+                         'groupId': 'eid'}],
+             },
+            {'type': 'Training Loss (FloatTrain)', 'name': 'Loss (FloatTrain)',
+             'description': 'Training Loss (FloatTrain)', 'unit': 'Loss', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'FloatTrain: Epoch:.*?loss:\s+(?<loss>[0-9\.]+)',
+                         'groupId': 'loss'}],
+             },
+            {'type': 'Validation Accuracy (FloatTrain)', 'name': 'Accuracy (FloatTrain)',
+             'description': 'Validation Accuracy (FloatTrain)', 'unit': 'Accuracy Top-1%', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'FloatTrain: Test:\s+\s+Acc@1\s+(?<accuracy>[-+e\d+\.\d+]+)',
+                         'groupId': 'accuracy',
+                         'scale_factor': 1}],
+             },
+            {'type': 'F1-Score (FloatTrain)', 'name': 'F1-Score (FloatTrain)',
+             'description': 'F1-Score (FloatTrain)', 'unit': 'F1-Score', 'value': None,
+             'regex': [{'op': 'search',
+                                                 'pattern': r'FloatTrain: Test:\s+\s+F1-Score\s+(?<f1score>[-+e\d+\.\d+]+)',
+                         'groupId': 'f1score',
+                         'scale_factor': 1}],
+             },
+            {'type': 'Confusion Matrix (FloatTrain)', 'name': 'Confusion Matrix (FloatTrain)',
+             'description': 'Confusion Matrix (FloatTrain)', 'unit': 'Confusion Matrix', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'FloatTrain:\s*Confusion Matrix:(\r\n|\r|\n)(?<cm>[\s\S]+?)INFO',
+                         'groupId': 'cm',
+                         'scale_factor': 1}],
+             },
+
+            # Quantized Training
+            {'type': 'Epoch (QuantTrain)', 'name': 'Epoch (QuantTrain)', 'description': 'Epochs (QuantTrain)',
+             'unit': 'Epoch', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'QuantTrain: Epoch:\s+\[(?<eid>\d+)\]\s+Total',
+                         'groupId': 'eid'}],
+             },
+            {'type': 'Training Loss (QuantTrain)', 'name': 'Loss (QuantTrain)',
+             'description': 'Training Loss (QuantTrain)', 'unit': 'Loss', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'QuantTrain: Epoch:.*?loss:\s+(?<loss>[0-9\.]+)',
+                         'groupId': 'loss'}],
+             },
+             {'type': 'Validation Accuracy (QuantTrain)', 'name': 'Accuracy (QuantTrain)',
+             'description': 'Validation Accuracy (QuantTrain)', 'unit': 'Accuracy Top-1%', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'QuantTrain: Test:\s+\s+Acc@1\s+(?<accuracy>[-+e\d+\.\d+]+)',
+                         'groupId': 'accuracy',
+                         'scale_factor': 1}],
+             },
+            {'type': 'F1-Score (QuantTrain)', 'name': 'F1-Score (QuantTrain)',
+             'description': 'F1-Score (QuantTrain)', 'unit': 'F1-Score', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'QuantTrain: Test:\s+\s+F1-Score\s+(?<f1score>[-+e\d+\.\d+]+)',
+                         'groupId': 'f1score',
+                         'scale_factor': 1}],
+             },
+            {'type': 'Confusion Matrix (QuantTrain)', 'name': 'Confusion Matrix (QuantTrain)',
+             'description': 'Confusion Matrix (QuantTrain)', 'unit': 'Confusion Matrix', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'QuantTrain:\s*Confusion Matrix:(\r\n|\r|\n)(?<cm>[\s\S]+?)INFO',
+                         'groupId': 'cm',
+                         'scale_factor': 1}],
+             },
+
+            # Best Epoch FloatTrain
+            {'type': 'Epoch (FloatTrain, BestEpoch)', 'name': 'Epoch (FloatTrain, BestEpoch)',
+             'description': 'Epochs (FloatTrain, BestEpoch)', 'unit': 'Epoch', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'FloatTrain.BestEpoch\s*: Best Epoch:\s+(?<eid>\d+)\s*',
+                         'groupId': 'eid'}],
+             },
+            {'type': 'Validation Accuracy (FloatTrain, BestEpoch)', 'name': 'Accuracy (FloatTrain, BestEpoch)',
+             'description': 'Accuracy (FloatTrain, BestEpoch)', 'unit': 'Accuracy Top-1%', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'FloatTrain.BestEpoch\s*: Acc@1\s+(?<accuracy>[-+e\d+\.\d+]+)',
+                         'groupId': 'accuracy',
+                         'scale_factor': 1}],
+             },
+            {'type': 'F1-Score (FloatTrain, BestEpoch)', 'name': 'F1-Score (FloatTrain, BestEpoch)',
+             'description': 'F1-Score (FloatTrain, BestEpoch)', 'unit': 'F1-Score', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'FloatTrain.BestEpoch\s*:\s+F1-Score\s+(?<f1score>[-+e\d+\.\d+]+)',
+                         'groupId': 'f1score',
+                         'scale_factor': 1}],
+             },
+
+            # Best Epoch QuantTrain
+            {'type': 'Epoch (QuantTrain, BestEpoch)', 'name': 'Epoch (QuantTrain, BestEpoch)',
+             'description': 'Epochs (QuantTrain, BestEpoch)', 'unit': 'Epoch', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'QuantTrain.BestEpoch: Best Epoch:\s+(?<eid>\d+)\s*',
+                         'groupId': 'eid'}],
+             },
+            {'type': 'Validation Accuracy (QuantTrain, BestEpoch)', 'name': 'Accuracy (QuantTrain, BestEpoch)',
+             'description': 'Accuracy (QuantTrain, BestEpoch)', 'unit': 'Accuracy Top-1%', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'QuantTrain.BestEpoch: Acc@1\s+(?<accuracy>[-+e\d+\.\d+]+)',
+                         'groupId': 'accuracy',
+                         'scale_factor': 1}],
+             },
+            {'type': 'F1-Score (QuantTrain, BestEpoch)', 'name': 'F1-Score (QuantTrain, BestEpoch)',
+             'description': 'F1-Score (QuantTrain, BestEpoch)', 'unit': 'F1-Score', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'QuantTrain.BestEpoch:\s+F1-Score\s+(?<f1score>[-+e\d+\.\d+]+)',
+                         'groupId': 'f1score',
+                         'scale_factor': 1}],
+             },
+
+            # Test data
+            {'type': 'Test Accuracy (Test Data)', 'name': 'Accuracy (Test Data)',
+             'description': 'Test Accuracy (Test Data)', 'unit': 'Accuracy Top-1%', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'test_data\s*:\s*Test Data Evaluation Accuracy:\s+(?<accuracy>[-+e\d+\.\d+]+)%',
+                         'groupId': 'accuracy',
+                         'scale_factor': 1}],
+             },
+            {'type': 'Confusion Matrix (Test Data)', 'name': 'Confusion Matrix',
+             'description': 'Confusion Matrix (Test Data)', 'unit': 'Confusion Matrix', 'value': None,
+             'regex': [{'op': 'search',
+                         'pattern': r'test_data\s*:\s*Confusion Matrix:(\r\n|\r|\n)(?<cm>[\s\S]+?)INFO',
+                         'groupId': 'cm',
+                         'scale_factor': 1}],
+             },
+        ]
+    }
+def create_template_model_description(task_category, task_type, dataset_loader=None, batch_size_key=None):
+    training_dict = dict(
+        quantization=TinyMLQuantizationVersion.QUANTIZATION_GENERIC,
+        training_backend='tinyml_tinyverse',
+        model_training_id='',
+        model_name='',
+        learning_rate=1e-4,
+        model_spec=None,
+        batch_size=constants.TRAINING_BATCH_SIZE_DEFAULT.get(batch_size_key or task_type, 64),
+        target_devices=[
+            constants.TARGET_DEVICE_xWRL6432
+        ],
+        training_devices={
+            constants.TRAINING_DEVICE_CPU: True,
+            constants.TRAINING_DEVICE_CUDA: True,
+            constants.TRAINING_DEVICE_MPS: True,
+        },
+    )
+
+    if dataset_loader:
+        training_dict['dataset_loader'] = dataset_loader
+
+    return dict(
+        common=dict(
+            task_category=task_category,
+            task_type=task_type,
+            generic_model=False,
+            model_details='',
+        ),
+        download=dict(download_url='', download_path=''),
+        training=training_dict,
+        compilation=dict()
+    )
+
+
+def get_model_descriptions_filtered(model_descriptions, enabled_models_list, task_type=None):
+    return {k: model_descriptions[k] for k in enabled_models_list if k in model_descriptions}
+
+def get_model_description_by_name(model_descriptions, enabled_models_list, model_name):
+    filtered = get_model_descriptions_filtered(model_descriptions, enabled_models_list)
+    return filtered.get(model_name, None)
+
+class BaseRadarModelTraining:
+    """
+    Base class for radar training modules.
+    """
+    train_module = None
+    test_module = None
+
+    @classmethod
+    def init_params(cls, *args, **kwargs):
+        params = dict(training=dict())
+        params = utils.ConfigDict(params, *args, **kwargs)
+        return params
+
+    def __init__(self, *args, quit_event=None, **kwargs):
+        self.params = self.init_params(*args, **kwargs)
+        self.quit_event = quit_event
+
+        log_summary_regex = self._get_log_summary_regex()
+
+        self.params.update(
+            training=utils.ConfigDict(
+                log_file_path=os.path.join(
+                    self.params.training.train_output_path
+                    if self.params.training.train_output_path
+                    else self.params.training.training_path,
+                    'run.log'
+                ),
+                log_summary_regex=log_summary_regex,
+                summary_file_path=os.path.join(self.params.training.training_path, 'summary.yaml'),
+                model_checkpoint_path=os.path.join(self.params.training.training_path, 'checkpoint.pth'),
+                model_export_path=os.path.join(self.params.training.training_path, 'model.onnx'),
+                model_proto_path=None,
+                tspa_license_path=os.path.abspath(os.path.join(
+                    os.path.dirname(tinyml_modelmaker.ai_modules.radar.training.tinyml_tinyverse.__file__),
+                    'LICENSE.txt'
+                )),
+            )
+        )
+        self._init_task_specific_params()
+
+        if self.params.training.quantization != TinyMLQuantizationVersion.NO_QUANTIZATION:
+            self.params.update(
+                training=utils.ConfigDict(
+                    model_checkpoint_path_quantization=os.path.join(
+                        self.params.training.training_path_quantization, 'checkpoint.pth'),
+                    model_export_path_quantization=os.path.join(
+                        self.params.training.training_path_quantization, 'model.onnx'),
+                )
+            )
+
+    def _get_log_summary_regex(self):
+        return get_radar_base_log_summary_regex()
+
+    def _init_task_specific_params(self):
+        pass
+
+    def _get_device(self):
+        distributed = 1 if self.params.training.num_gpus > 1 else 0
+
+        device = 'cpu'
+        if self.params.training.num_gpus > 0:
+            if torch.backends.mps.is_available():
+                device = 'mps'
+            else:
+                device = 'cuda'
+
+        return device, distributed
+    
+    def _build_common_train_argv(self, device, distributed):
+        """
+        Common radar trainin args
+        """
+        return [
+            '--model', f'{self.params.training.model_training_id}',
+            '--dual-op', f'{self.params.training.dual_op}',
+            '--model-config', f'{self.params.training.model_config}',
+            '--augment-config', f'{self.params.training.augment_config}',
+            '--model-spec', f'{self.params.training.model_spec}',
+
+            '--dataset', 'modelmaker',
+            '--dataset-loader', f'{self.params.training.dataset_loader}',
+            '--annotation-prefix', f'{self.params.dataset.annotation_prefix}',
+
+            '--gpus', f'{self.params.training.num_gpus}',
+            '--batch-size', f'{self.params.training.batch_size}',
+            '--opt', f'{self.params.training.optimizer}',
+            '--weight-decay', f'{self.params.training.weight_decay}',
+            '--lr-scheduler', f'{self.params.training.lr_scheduler}',
+            '--lr-warmup-epochs', f'{getattr(self.params.training, "lr_warmup_epochs", 0)}',
+            '--distributed', f'{distributed}',
+            '--device', f'{device}',
+            '--compile-model', f'{getattr(self.params.training, "compile_model", 0)}',
+
+            '--generic-model', f'{self.params.common.generic_model}',
+
+            # Transform
+            '--data-proc-transforms', self.params.data_processing_feature_extraction.data_proc_transforms,
+            '--feat-ext-transform', self.params.data_processing_feature_extraction.feat_ext_transform,
+            '--feat-ext-store-dir', f'{self.params.data_processing_feature_extraction.feat_ext_store_dir}',
+            '--dont-train-just-feat-ext', f'{self.params.data_processing_feature_extraction.dont_train_just_feat_ext}',
+            '--store-feat-ext-data', f'{self.params.data_processing_feature_extraction.store_feat_ext_data}',
+
+            '--sampling-rate', f'{self.params.data_processing_feature_extraction.sampling_rate}',
+            '--frame-size', f'{self.params.data_processing_feature_extraction.frame_size}',
+            '--feature-size-per-frame', f'{self.params.data_processing_feature_extraction.feature_size_per_frame}',
+
+            '--output-int', f'{self.params.training.output_int}',
+            '--variables', f'{self.params.data_processing_feature_extraction.variables}',
+            '--lis', f'{self.params.training.log_file_path}',
+            '--ondevice-training', f'{self.params.training.ondevice_training}',
+            '--early-stopping', f'{self.params.training.early_stopping}',
+            '--early-stopping-patience', f'{self.params.training.early_stopping_patience}',
+            '--early-stopping-min-delta', f'{self.params.training.early_stopping_min_delta}',
+
+            # Passed through only so train.py's early memory pre-flight check (which runs
+            # before the real compilation stage even starts) can resolve the same
+            # cross-compiler/target the real compilation stage would use, instead of
+            # falling back to compilation.py's unusable bare argparse defaults. Empty
+            # string (not the literal "None") when unresolved, so train_base.py's
+            # `getattr(args, ..., None) or default` fallback treats it as absent.
+            # NOTE: must stay BEFORE the --data-path/--store-feat-ext-data/--epochs/--lr/
+            # --output-dir tail below -- run()/several call sites splice this argv list
+            # with fixed negative-index slices (argv[:-10], argv[:-8], argv[:-2]) that
+            # assume exactly that 10-item tail is last; appending anything after it shifts
+            # those slices and silently corrupts them.
+            '--cross-compiler', f'{self.params.compilation.get("cross_compiler") or ""}',
+            '--cross-compiler-options', f'{self.params.compilation.get("cross_compiler_options") or ""}',
+            '--target', f'{self.params.compilation.get("target") or ""}',
+            '--target-c-mcpu', f'{self.params.compilation.get("target_c_mcpu") or ""}',
+            '--data-path', os.path.join(self.params.dataset.dataset_path, self.params.dataset.data_dir),
+            '--epochs', f'{self.params.training.training_epochs}',
+            '--lr', f'{self.params.training.learning_rate}',
+            '--output-dir', f'{self.params.training.training_path}',
+        ] + self._build_radar_data_proc_argv()
+
+    def _build_radar_data_proc_argv(self):
+        """
+        Radar-specific data processing / feature extraction args ,
+        shared between train and test argv. Each param mirrors a key in
+        params.data_processing_feature_extraction (see params.py) and a --flag defined
+        in tinyml_tinyverse train_base.py's get_base_args_parser().
+        """
+        dpfe = self.params.data_processing_feature_extraction
+        return [
+
+            '--radar-range-bins-bounds', f'{dpfe.radar_range_bins_bounds}',
+
+            '--radar-point-cloud-data-selector', dpfe.radar_point_cloud_data_selector,
+            '--radar-point-cloud-coordinate-system', f'{dpfe.radar_point_cloud_coordinate_system}',
+            '--radar-point-cloud-relative-coordinate-filter', dpfe.radar_point_cloud_relative_coordinate_filter,
+            '--radar-point-cloud-spatial-filter-bounds', f'{dpfe.radar_point_cloud_spatial_filter_bounds}',
+            '--radar-point-cloud-non-spatial-filter-bounds', f'{dpfe.radar_point_cloud_non_spatial_filter_bounds}',
+
+            '--radar-track-data-selector', dpfe.radar_track_data_selector,
+            '--radar-track-velocity-bounds', f'{dpfe.radar_track_velocity_bounds}',
+            '--radar-track-acceleration-bounds', f'{dpfe.radar_track_acceleration_bounds}',
+            '--radar-track-spatial-filter-bounds', f'{dpfe.radar_track_spatial_filter_bounds}',
+
+            '--radar-data-scaling-track-velocity', f'{dpfe.radar_data_scaling_track_velocity}',
+            
+            '--radar-max-points-per-frame', f'{dpfe.radar_max_points_per_frame}',
+            '--radar-min-points-per-frame', f'{dpfe.radar_min_points_per_frame}',
+            '--radar-min-points-per-window', f'{dpfe.radar_min_points_per_window}',
+            '--radar-point-cloud-structure-strategy', f'{dpfe.radar_point_cloud_structure_strategy}',
+            '--radar-point-cloud-sort-by', f'{dpfe.radar_point_cloud_sort_by}',
+            '--radar-frames-quality-index', f'{dpfe.radar_frames_quality_index}',
+            '--radar-feature-ordering', f'{dpfe.radar_feature_ordering}'
+        ]
+    
+    def _get_task_specific_train_argv(self):
+        return []
+
+    def _build_common_test_argv(self, device, data_path, model_path, output_dir):
+        """
+        Common radar test args.
+        """
+        return [
+            '--dataset', 'modelmaker',
+            '--dataset-loader', f'{self.params.training.dataset_loader}',
+            '--annotation-prefix', f'{self.params.dataset.annotation_prefix}',
+
+            '--gpus', f'{self.params.training.num_gpus}',
+            '--batch-size', f'{self.params.training.batch_size}',
+            '--distributed', '0',
+            '--device', f'{device}',
+
+            '--variables', f'{self.params.data_processing_feature_extraction.variables}',
+
+            '--feat-ext-transform', self.params.data_processing_feature_extraction.feat_ext_transform,
+            '--data-proc-transforms', self.params.data_processing_feature_extraction.data_proc_transforms,
+
+            '--frame-size', f'{self.params.data_processing_feature_extraction.frame_size}',
+            '--feature-size-per-frame', f'{self.params.data_processing_feature_extraction.feature_size_per_frame}',
+            '--num-frame-concat', f'{self.params.data_processing_feature_extraction.num_frame_concat}',
+
+            
+            '--output-int', f'{self.params.training.output_int}',
+
+            '--lis', f'{self.params.training.log_file_path}',
+            '--data-path', f'{data_path}',
+            '--output-dir', output_dir,
+            '--model-path', f'{model_path}',
+            '--generic-model', f'{self.params.common.generic_model}',
+        ] + self._build_radar_data_proc_argv()
+    
+    def _get_task_specific_test_argv(self):
+        return []
+
+    def _get_quant_train_epochs_divisor(self):
+        return 5
+
+    def _get_min_quant_epochs(self):
+        return 10
+    def clear(self):
+        shutil.rmtree(self.params.training.training_path, ignore_errors=True)
+
+    def run(self, **kwargs):
+        os.makedirs(self.params.training.training_path, exist_ok=True)
+
+        device, distributed = self._get_device()
+        # Float training argv.
+        argv = self._build_common_train_argv(device, distributed)
+        argv.extend(self._get_task_specific_train_argv())
+
+        args = self.train_module.get_args_parser().parse_args(argv)
+        args.quit_event = self.quit_event
+
+        if not utils.misc_utils.str2bool(self.params.testing.skip_train):
+            if utils.misc_utils.str2bool(self.params.training.run_quant_train_only):
+                if self.params.training.quantization == TinyMLQuantizationVersion.NO_QUANTIZATION:
+                    raise ValueError(
+                        f"quantization cannot be {TinyMLQuantizationVersion.NO_QUANTIZATION} "
+                        f"if run_quant_train_only is chosen"
+                    )
+
+                quant_argv = deepcopy(argv)
+                quant_argv = self._replace_arg(quant_argv, '--output-dir', self.params.training.training_path_quantization)
+                quant_argv = self._replace_arg(quant_argv, '--epochs',
+                                                str(max(self._get_min_quant_epochs(),
+                                                        self.params.training.training_epochs // self._get_quant_train_epochs_divisor())))
+                quant_argv = self._replace_arg(quant_argv, '--lr',
+                                                str(float(self.params.training.learning_rate) / 100.0))
+                quant_argv.extend([
+                    '--quantization', f'{self.params.training.quantization}',
+                    '--quantization-method', f'{self.params.training.quantization_method}',
+                    '--weight-bitwidth', f'{self.params.training.quantization_weight_bitwidth}',
+                    '--activation-bitwidth', f'{self.params.training.quantization_activation_bitwidth}',
+                    '--lr-warmup-epochs', '0',
+                    '--store-feat-ext-data', 'False',
+                ])
+
+                args = self.train_module.get_args_parser().parse_args(quant_argv)
+                args.quit_event = self.quit_event
+                self.train_module.run(args)
+
+            else:
+                self.train_module.run(args)
+
+                if (utils.misc_utils.str2bool(self.params.data_processing_feature_extraction.store_feat_ext_data)
+                        and utils.misc_utils.str2bool(self.params.data_processing_feature_extraction.dont_train_just_feat_ext)):
+                    return self.params
+
+                if self.params.training.quantization != TinyMLQuantizationVersion.NO_QUANTIZATION:
+                    quant_argv = deepcopy(argv)
+                    quant_argv = self._replace_arg(quant_argv, '--output-dir',
+                                                    self.params.training.training_path_quantization)
+                    quant_argv = self._replace_arg(quant_argv, '--epochs',
+                                                    str(max(self._get_min_quant_epochs(),
+                                                            self.params.training.training_epochs // self._get_quant_train_epochs_divisor())))
+                    quant_argv = self._replace_arg(quant_argv, '--lr',
+                                                    str(float(self.params.training.learning_rate) / 100.0))
+                    quant_argv.extend([
+                        '--weights', f'{self.params.training.model_checkpoint_path}',
+                        '--quantization', f'{self.params.training.quantization}',
+                        '--quantization-method', f'{self.params.training.quantization_method}',
+                        '--weight-bitwidth', f'{self.params.training.quantization_weight_bitwidth}',
+                        '--activation-bitwidth', f'{self.params.training.quantization_activation_bitwidth}',
+                        '--lr-warmup-epochs', '0',
+                        '--store-feat-ext-data', 'False',
+                    ])
+
+                    args = self.train_module.get_args_parser().parse_args(quant_argv)
+                    args.quit_event = self.quit_event
+                    self.train_module.run(args)
+
+        if utils.misc_utils.str2bool(self.params.testing.enable):
+            
+            if self.params.testing.test_data and os.path.exists(self.params.testing.test_data):
+                data_path = self.params.testing.test_data
+            else:
+                data_path = os.path.join(
+                    self.params.dataset.dataset_path,
+                    self.params.dataset.data_dir
+                )
+
+            if self.params.testing.model_path and os.path.exists(self.params.testing.model_path):
+                model_path = self.params.testing.model_path
+                output_dir = os.path.dirname(model_path)
+            else:
+                if self.params.training.quantization == TinyMLQuantizationVersion.NO_QUANTIZATION:
+                    model_path = os.path.join(
+                        self.params.training.training_path,
+                        'model.onnx'
+                    )
+                    output_dir = self.params.training.training_path
+                else:
+                    model_path = os.path.join(
+                        self.params.training.training_path_quantization,
+                        'model.onnx'
+                    )
+                    output_dir = self.params.training.training_path_quantization
+
+            test_argv = self._build_common_test_argv(
+                device,
+                data_path,
+                model_path,
+                output_dir
+            )
+
+            test_argv.extend(self._get_task_specific_test_argv())
+
+            args = self.test_module.get_args_parser().parse_args(test_argv)
+            args.quit_event = self.quit_event
+
+            self.test_module.run(args)
+
+        return self.params
+
+    @staticmethod
+    def _replace_arg(argv, key, value):
+        argv = list(argv)
+        if key not in argv:
+            argv.extend([key, str(value)])
+            return argv
+
+        idx = argv.index(key)
+        if idx + 1 >= len(argv):
+            raise ValueError(f"Argument {key} exists but has no value")
+        argv[idx + 1] = str(value)
+        return argv
+
+    def stop(self):
+        if self.quit_event is not None:
+            self.quit_event.set()
+            return True
+        return False
+
+    def get_params(self):
+        return self.params
