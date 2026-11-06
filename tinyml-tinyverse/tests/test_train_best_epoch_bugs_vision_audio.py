@@ -53,6 +53,7 @@ def _base_classification_args(tmp_dir, **overrides):
         output_dir=tmp_dir, weight_bitwidth=8, activation_bitwidth=8,
         autoquant_tolerance_classification=0.1, opset_version=17, device='cpu',
         file_level_classification_log=os.path.join(tmp_dir, 'file_level.log'), DEBUG=False,
+        early_stopping=False, early_stopping_patience=5, early_stopping_min_delta=0.0,
     )
     for key, value in overrides.items():
         setattr(args, key, value)
@@ -97,6 +98,8 @@ def test_image_classification_train_main_survives_zero_iteration_resume(tmp_path
         stack.enter_context(patch.object(img_train.utils, "quantization_wrapped_model", side_effect=lambda model, *a, **kw: model))
         stack.enter_context(patch.object(img_train.utils, "export_model"))
         stack.enter_context(patch.object(img_train, "log_training_time"))
+        # run_memory_preflight shells out to the TI compiler; irrelevant here.
+        stack.enter_context(patch.object(img_train, "run_memory_preflight"))
         stack.enter_context(patch.object(img_train, "shutdown_data_loaders"))
         img_train.main(0, args)
 
@@ -119,6 +122,7 @@ def _base_audio_args(tmp_dir, **overrides):
         output_dir=tmp_dir, weight_bitwidth=8, activation_bitwidth=8,
         autoquant_tolerance_classification=0.1, opset_version=17, device='cpu',
         file_level_classification_log=os.path.join(tmp_dir, 'file_level.log'), DEBUG=False,
+        audio_feature='MFCC',
     )
     for key, value in overrides.items():
         setattr(args, key, value)
@@ -143,6 +147,8 @@ def _patch_audio_common_pipeline(stack, dataset):
     stack.enter_context(patch.object(audio_train.utils, "quantization_wrapped_model", side_effect=lambda model, *a, **kw: model))
     stack.enter_context(patch.object(audio_train.utils, "export_model"))
     stack.enter_context(patch.object(audio_train, "log_training_time"))
+    # run_memory_preflight shells out to the TI compiler; irrelevant here.
+    stack.enter_context(patch.object(audio_train, "run_memory_preflight"))
 
 
 def test_audio_classification_train_main_survives_zero_iteration_resume(tmp_path):

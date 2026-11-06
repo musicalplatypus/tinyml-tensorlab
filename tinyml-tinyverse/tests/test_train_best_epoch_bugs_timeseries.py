@@ -61,6 +61,7 @@ def _base_classification_args(**overrides):
         output_dir='/tmp/fake-output', weight_bitwidth=8, activation_bitwidth=8,
         autoquant_tolerance_classification=0.1, opset_version=17, device='cpu',
         file_level_classification_log='/tmp/fake-output/file_level.log', DEBUG=False,
+        early_stopping=False, early_stopping_patience=5, early_stopping_min_delta=0.0,
     )
     for key, value in overrides.items():
         setattr(args, key, value)
@@ -101,6 +102,8 @@ def _patch_common_pipeline(stack):
     stack.enter_context(patch.object(tsc_train.utils, "quantization_wrapped_model", side_effect=lambda model, *a, **kw: model))
     stack.enter_context(patch.object(tsc_train.utils, "export_model"))
     stack.enter_context(patch.object(tsc_train, "log_training_time"))
+    # run_memory_preflight shells out to the TI compiler; irrelevant here.
+    stack.enter_context(patch.object(tsc_train, "run_memory_preflight"))
     stack.enter_context(patch.object(tsc_train, "shutdown_data_loaders"))
 
 
@@ -164,6 +167,7 @@ def test_forecasting_train_main_survives_zero_iteration_resume():
         epochs=3, start_epoch=3,  # loop runs zero iterations, like a fully-resumed checkpoint
         output_dir='/tmp/fake-output', opset_version=17, device='cpu',
         quantization_method='QAT', output_int=None, generic_model=False,
+        early_stopping=False, early_stopping_patience=5, early_stopping_min_delta=0.0,
     )
     dataset = _FakeForecastingDataset()
     forecast_train.dataset_load_state['dataset'] = dataset
@@ -191,5 +195,7 @@ def test_forecasting_train_main_survives_zero_iteration_resume():
         stack.enter_context(patch.object(forecast_train, "resume_from_checkpoint"))
         stack.enter_context(patch.object(forecast_train, "export_trained_model"))
         stack.enter_context(patch.object(forecast_train, "log_training_time"))
+        # run_memory_preflight shells out to the TI compiler; irrelevant here.
+        stack.enter_context(patch.object(forecast_train, "run_memory_preflight"))
         stack.enter_context(patch.object(forecast_train, "shutdown_data_loaders"))
         forecast_train.main(0, args)

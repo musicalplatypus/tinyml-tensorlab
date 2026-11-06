@@ -24,7 +24,8 @@ def test_gen_artifacts_restores_cwd_even_when_drive_compile_raises(tmp_path):
     (output_dir / "artifacts").mkdir()
     original_cwd = os.getcwd()
 
-    args = Namespace(output_dir=str(output_dir), output="model", keep_libc_files=True)
+    args = Namespace(output_dir=str(output_dir), output="model", keep_libc_files=True,
+                     filterbank_enabled=False)
 
     with patch.object(compilation, "drive_compile", side_effect=RuntimeError("TVM blew up")):
         with pytest.raises(RuntimeError, match="TVM blew up"):
@@ -39,7 +40,8 @@ def test_gen_artifacts_restores_cwd_on_success(tmp_path):
     (output_dir / "artifacts").mkdir()
     original_cwd = os.getcwd()
 
-    args = Namespace(output_dir=str(output_dir), output="model", keep_libc_files=True)
+    args = Namespace(output_dir=str(output_dir), output="model", keep_libc_files=True,
+                     filterbank_enabled=False)
 
     with patch.object(compilation, "drive_compile"):
         compilation.gen_artifacts(args)
@@ -51,6 +53,7 @@ def _minimal_main_args(tmp_path, generic_model):
     return Namespace(
         lis=None,
         output_dir=str(tmp_path),
+        filterbank_enabled=False,
         DEBUG=False,
         target="c",
         cross_compiler=str(tmp_path),  # any existing path passes the validation check

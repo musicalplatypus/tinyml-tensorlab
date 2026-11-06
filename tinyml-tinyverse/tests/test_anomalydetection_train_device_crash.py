@@ -110,6 +110,7 @@ def test_main_passes_a_torch_device_not_the_raw_args_device_string():
         output_dir='/tmp/fake-output', autoquant_tolerance_anomaly=0.1,
         opset_version=17, generic_model=True, gen_golden_vectors=False,
         device='cuda',  # the raw argparse string that must NOT reach get_reconstruction_errors_stats
+        early_stopping=False, early_stopping_patience=5, early_stopping_min_delta=0.0,
     )
     dataset = _FakeAnomalyDataset()
     anomaly_train.dataset_load_state['dataset'] = dataset
@@ -140,6 +141,8 @@ def test_main_passes_a_torch_device_not_the_raw_args_device_string():
         stack.enter_context(patch.object(anomaly_train, "get_grad_scaler", return_value=None))
         stack.enter_context(patch.object(anomaly_train.utils, "export_model"))
         stack.enter_context(patch.object(anomaly_train, "log_training_time"))
+        # run_memory_preflight shells out to the TI compiler; irrelevant here.
+        stack.enter_context(patch.object(anomaly_train, "run_memory_preflight"))
         stack.enter_context(patch.object(anomaly_train, "shutdown_data_loaders"))
         mock_get_stats = stack.enter_context(patch.object(
             anomaly_train, "get_reconstruction_errors_stats",
